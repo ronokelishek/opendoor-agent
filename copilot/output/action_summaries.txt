@@ -1,0 +1,60 @@
+Opendoor Copilot — Action Summaries
+Generated: 2026-03-30 07:29 UTC
+============================================================
+
+Issue 1:
+[HIGH] Inventory Aging — Atlanta Entry Level
+Atlanta entry level inventory is aging materially, with 5.8% of active listings (14 homes) exceeding 90 days on market and average DOM now at 52.9 days. The trend has been worsening for multiple consecutive weeks, indicating a structural demand-supply imbalance rather than a temporary seasonal blip.
+Action (market-ops): Market-ops team: Implement an immediate 3% price reduction on all Atlanta entry level listings exceeding 75 days DOM. For homes over 100 days, apply a 5% reduction. Execute price changes by end of business Friday.
+
+————————————————————————————————————————
+
+Issue 2:
+[HIGH] Inventory Aging — Atlanta Mid Tier
+Atlanta mid tier inventory is aging materially, with 10.7% of active listings (17 homes) exceeding 90 days on market and average DOM now at 60.0 days. The trend has been worsening for multiple consecutive weeks, indicating a structural demand-supply imbalance rather than a temporary seasonal blip.
+Action (market-ops): Market-ops team: Implement an immediate 3% price reduction on all Atlanta mid tier listings exceeding 75 days DOM. For homes over 100 days, apply a 5% reduction. Execute price changes by end of business Friday.
+
+————————————————————————————————————————
+
+Issue 3:
+[HIGH] Inventory Aging — Atlanta Premium
+Atlanta premium inventory is aging materially, with 24.1% of active listings (20 homes) exceeding 90 days on market and average DOM now at 73.9 days. The trend has been worsening for multiple consecutive weeks, indicating a structural demand-supply imbalance rather than a temporary seasonal blip.
+Action (market-ops): Market-ops team: Implement an immediate 3% price reduction on all Atlanta premium listings exceeding 75 days DOM. For homes over 100 days, apply a 5% reduction. Execute price changes by end of business Friday.
+
+————————————————————————————————————————
+
+Issue 4:
+[HIGH] Funnel Deterioration — Dallas Premium
+Dallas premium is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 36.7% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 10.0%. At 60 leads this week, the degraded conversion rate translates to approximately 12 fewer offers generated versus the historical baseline — a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.
+Action (growth): Growth team: Pull the Dallas offer funnel drop-off report by step (lead received → offer generated → offer viewed → offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.
+
+————————————————————————————————————————
+
+Issue 5:
+[HIGH] Pricing Misalignment — Phoenix Mid Tier
+Opendoor's offer prices in Phoenix mid tier are running 5.8% above market estimated values, triggering a seller acceptance rate collapse to 49.4% — down roughly 12 percentage points from prior-week levels. At current offer volume, this misalignment is costing approximately 9 accepted offers per week and eroding acquisition margins to 1.4%.
+Action (pricing): Pricing team: Pull all Phoenix mid tier comparable sales from the past 30 days and audit the AVM inputs by zip code. Apply a manual -3% offer adjustment across the segment by EOD tomorrow while the model recalibration is completed.
+
+————————————————————————————————————————
+
+Issue 6:
+[MEDIUM] Funnel Deterioration — Miami Mid Tier
+Miami mid tier is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 53.5% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 27.2%. At 114 leads this week, the degraded conversion rate translates to approximately 5 fewer offers generated versus the historical baseline — a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.
+Action (growth): Growth team: Pull the Miami offer funnel drop-off report by step (lead received → offer generated → offer viewed → offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.
+
+————————————————————————————————————————
+
+Issue 7:
+[LOW] Funnel Deterioration — Dallas Entry Level
+Dallas entry level is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 39.5% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 17.4%. At 172 leads this week, the degraded conversion rate translates to approximately 31 fewer offers generated versus the historical baseline — a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.
+Action (growth): Growth team: Pull the Dallas offer funnel drop-off report by step (lead received → offer generated → offer viewed → offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.
+
+————————————————————————————————————————
+
+Issue 8:
+[LOW] Funnel Deterioration — Dallas Mid Tier
+Dallas mid tier is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 38.5% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 16.5%. At 109 leads this week, the degraded conversion rate translates to approximately 21 fewer offers generated versus the historical baseline — a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.
+Action (growth): Growth team: Pull the Dallas offer funnel drop-off report by step (lead received → offer generated → offer viewed → offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.
+
+————————————————————————————————————————
+

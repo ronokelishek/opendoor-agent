@@ -1,0 +1,35 @@
+[
+  {
+    "rec_id": "REC-0001",
+    "week_start": "2026-03-24",
+    "logged_at": "2026-03-30T07:56:58.704834",
+    "issue_type": "pricing_misalignment",
+    "market": "Charlotte",
+    "segment": "mid_tier",
+    "severity": "high",
+    "actions": [
+      "Narrow offer band by 2%\u20131% in Charlotte starting with highest-DOM ZIP clusters.",
+      "Re-run pricing model inputs for Charlotte all segment \u2014 current list-to-sale ratio (0.95) indicates pricing is drifting outside observed acceptance behavior.",
+      "Prioritize disposition review for Charlotte homes >60 days DOM \u2014 velocity signal indicates demand softening independent of pricing."
+    ],
+    "expected_outcome": {
+      "acceptance_rate_improvement_pct": "+29.9%",
+      "homes_recovered_per_month": 6,
+      "margin_recovered_per_month": 131670,
+      "timeframe": "Expected improvement visible within 2\u20133 weeks of adjustment",
+      "measurement": "Track LSR and weekly accepted_offer_count vs prior 4-week average"
+    },
+    "confidence_at_issue": "Medium-High",
+    "action_status": "taken",
+    "outcome_observed": {
+      "metric": "acceptance_rate_change_pct",
+      "observed_value": 24.1,
+      "expected_value": 29.9,
+      "recorded_at": "2026-03-30T07:56:58.741653"
+    },
+    "prediction_accuracy": 0.806,
+    "notes": "Narrowed offer band -2.5% in Charlotte mid-tier ZIPs",
+    "action_status_label": "Recommendation was implemented as suggested",
+    "action_recorded_at": "2026-03-30T07:56:58.721713"
+  }
+]

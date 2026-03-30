@@ -1,0 +1,633 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Opendoor Pricing & Conversion Decision Engine</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#09090f;--surface:#0f1018;--card:#13151f;--card2:#171a26;--border:#1e2235;
+      --text:#e2e8f0;--muted:#64748b;--dim:#252d42;
+      --blue:#38bdf8;--blue-bg:#071e33;--blue-b:#0e3a5e;
+      --green:#4ade80;--green-bg:#071f12;--green-b:#0f3d20;
+      --purple:#c084fc;--purple-bg:#140b22;--purple-b:#2d1650;
+      --orange:#fb923c;--orange-bg:#1f1005;--orange-b:#3d2005;
+      --red:#f87171;--red-bg:#1f0808;--red-b:#3d1010;
+      --yellow:#fbbf24;--yellow-bg:#1f1a05;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+    /* NAV */
+    nav{display:flex;justify-content:space-between;align-items:center;padding:13px 48px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
+    .nav-brand{font-size:0.85rem;font-weight:700;color:var(--blue);letter-spacing:.06em}
+    .nav-title{font-size:0.78rem;color:var(--muted)}
+    .nav-right{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+    .nav-link{font-size:0.75rem;color:var(--muted);text-decoration:none}
+    .nav-link:hover{color:var(--text)}
+    .nav-pill{font-size:0.68rem;padding:3px 12px;border-radius:999px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)}
+
+    /* ALERT BANNER */
+    .alert-banner{background:linear-gradient(90deg,#1a0808 0%,#1f0f05 100%);border-bottom:1px solid var(--red-b);padding:12px 48px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+    .alert-dot{width:8px;height:8px;border-radius:50%;background:var(--red);box-shadow:0 0 8px var(--red);flex-shrink:0;animation:pulse 2s infinite}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+    .alert-text{font-size:0.8rem;color:#fca5a5}
+    .alert-text strong{color:var(--red)}
+    .alert-meta{margin-left:auto;font-size:0.7rem;color:var(--muted)}
+
+    /* LAYOUT */
+    section{padding:64px 48px;border-top:1px solid var(--border)}
+    .inner{max-width:1140px;margin:0 auto}
+    .eyebrow{font-size:0.68rem;color:var(--blue);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px}
+    .sec-title{font-size:1.55rem;font-weight:700;color:#f1f5f9;margin-bottom:8px}
+    .sec-sub{font-size:0.88rem;color:var(--muted);margin-bottom:36px;max-width:600px}
+    .grid2{display:grid;grid-template-columns:1fr 1fr;gap:20px}
+    .grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+    .grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+    @media(max-width:900px){.grid2,.grid3,.grid4{grid-template-columns:1fr}}
+
+    /* HERO */
+    .hero{padding:80px 48px 64px;max-width:1000px;margin:0 auto;text-align:center}
+    .hero-eyebrow{font-size:0.7rem;color:var(--orange);text-transform:uppercase;letter-spacing:.15em;margin-bottom:18px}
+    .hero h1{font-size:2.8rem;font-weight:800;color:#f8fafc;line-height:1.15;margin-bottom:18px}
+    .hero h1 em{font-style:normal;color:var(--orange)}
+    .hero-sub{font-size:1rem;color:#94a3b8;max-width:620px;margin:0 auto 36px}
+    .hero-kpis{display:flex;gap:40px;justify-content:center;flex-wrap:wrap;margin-top:32px}
+    .kpi{text-align:center}
+    .kpi-num{font-size:2.2rem;font-weight:800}
+    .kpi-label{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+    /* SEVERITY */
+    .sev-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:32px}
+    @media(max-width:900px){.sev-grid{grid-template-columns:1fr 1fr}}
+    .sev-card{border-radius:10px;padding:18px;border:1px solid}
+    .sev-card.critical{background:var(--red-bg);border-color:var(--red-b)}
+    .sev-card.high{background:var(--orange-bg);border-color:var(--orange-b)}
+    .sev-card.medium{background:var(--yellow-bg);border-color:#3d3005}
+    .sev-card.low{background:var(--blue-bg);border-color:var(--blue-b)}
+    .sev-card.healthy{background:var(--green-bg);border-color:var(--green-b)}
+    .sev-label{font-size:0.75rem;font-weight:800;text-transform:uppercase;letter-spacing:.1em;margin-bottom:6px}
+    .sev-card.critical .sev-label{color:var(--red)}
+    .sev-card.high .sev-label{color:var(--orange)}
+    .sev-card.medium .sev-label{color:var(--yellow)}
+    .sev-card.low .sev-label{color:var(--blue)}
+    .sev-card.healthy .sev-label{color:var(--green)}
+    .sev-sla{font-size:0.75rem;color:#94a3b8;margin-bottom:8px;font-weight:600}
+    .sev-action{font-size:0.72rem;color:var(--muted);line-height:1.5}
+
+    /* DECISION PACKET */
+    .packet{background:var(--card);border:1px solid var(--border);border-radius:14px;overflow:hidden;margin-bottom:20px}
+    .packet.critical{border-color:var(--red-b)}
+    .packet.high{border-color:var(--orange-b)}
+    .packet-header{display:flex;align-items:center;justify-content:space-between;padding:16px 24px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+    .packet-header.critical{background:var(--red-bg)}
+    .packet-header.high{background:var(--orange-bg)}
+    .packet-title{font-size:0.95rem;font-weight:700;color:#f1f5f9}
+    .packet-meta{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+    .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:0.68rem;font-weight:700;text-transform:uppercase}
+    .badge.critical{background:var(--red-bg);color:var(--red);border:1px solid var(--red-b)}
+    .badge.high{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-b)}
+    .badge.medium{background:var(--yellow-bg);color:var(--yellow);border:1px solid #3d3005}
+    .sla-chip{font-size:0.68rem;color:var(--muted);padding:2px 10px;border-radius:4px;background:var(--surface);border:1px solid var(--border)}
+    .packet-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+    @media(max-width:800px){.packet-body{grid-template-columns:1fr}}
+    .packet-col{padding:22px 24px}
+    .packet-col+.packet-col{border-left:1px solid var(--border)}
+    .col-label{font-size:0.65rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px}
+    .evidence-list{display:flex;flex-direction:column;gap:7px}
+    .ev-row{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem;padding:6px 10px;background:var(--surface);border-radius:6px;border:1px solid var(--border)}
+    .ev-label{color:#94a3b8}
+    .ev-val{font-family:"Courier New",monospace;font-weight:600}
+    .ev-val.bad{color:var(--red)}
+    .ev-val.warn{color:var(--orange)}
+    .ev-val.ok{color:var(--green)}
+    .action-list{display:flex;flex-direction:column;gap:8px}
+    .action-row{display:flex;gap:10px;align-items:flex-start;font-size:0.8rem;color:#94a3b8;line-height:1.5}
+    .action-num{width:20px;height:20px;border-radius:50%;background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-b);font-size:0.65rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+    .packet-footer{border-top:1px solid var(--border);padding:16px 24px;display:grid;grid-template-columns:repeat(4,1fr);gap:16px;background:var(--surface)}
+    @media(max-width:700px){.packet-footer{grid-template-columns:1fr 1fr}}
+    .foot-item-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px}
+    .foot-item-val{font-size:0.85rem;font-weight:700}
+    .foot-item-sub{font-size:0.7rem;color:var(--muted);margin-top:2px}
+
+    /* FUNNEL */
+    .funnel-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:16px}
+    .funnel-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+    .funnel-market{font-size:1rem;font-weight:700;color:#f1f5f9;margin-bottom:4px}
+    .funnel-bottleneck{font-size:0.75rem;color:var(--orange);margin-bottom:14px;border-left:2px solid var(--orange-b);padding-left:8px;line-height:1.4}
+    .stage-row{display:flex;justify-content:space-between;align-items:center;padding:6px 0;border-bottom:1px solid var(--border);font-size:0.79rem}
+    .stage-row:last-child{border-bottom:none}
+    .stage-name{color:var(--muted)}
+    .stage-right{display:flex;align-items:center;gap:8px}
+    .stage-val{font-family:"Courier New",monospace;font-size:0.78rem}
+    .stage-signal{font-size:0.65rem;padding:1px 7px;border-radius:3px;font-weight:600;text-transform:uppercase}
+    .stage-signal.bad{background:var(--red-bg);color:var(--red)}
+    .stage-signal.warn{background:var(--orange-bg);color:var(--orange)}
+    .stage-signal.ok{background:var(--green-bg);color:var(--green)}
+
+    /* FINANCIAL IMPACT */
+    .impact-table{width:100%;border-collapse:collapse}
+    .impact-table th{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:8px 14px;text-align:left;border-bottom:1px solid var(--border)}
+    .impact-table td{padding:12px 14px;font-size:0.83rem;border-bottom:1px solid var(--border)}
+    .impact-table tr:last-child td{border-bottom:none}
+    .mkt-name{font-weight:700;color:#f1f5f9}
+    .money{font-family:"Courier New",monospace}
+    .money.red{color:var(--red);font-weight:700}
+    .money.orange{color:var(--orange);font-weight:700}
+    .money.green{color:var(--green);font-weight:700}
+    .total-row td{background:var(--card2);font-weight:700;border-top:2px solid var(--border)}
+
+    /* FEEDBACK LOOP */
+    .loop-steps{display:flex;flex-direction:column;gap:0;position:relative;margin-bottom:32px}
+    .loop-step{display:flex;gap:20px;align-items:flex-start;padding:20px 0}
+    .loop-step+.loop-step{border-top:1px solid var(--border)}
+    .step-num{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.8rem;font-weight:800;flex-shrink:0;margin-top:2px}
+    .step-num.s1{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b)}
+    .step-num.s2{background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-b)}
+    .step-num.s3{background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)}
+    .step-num.s4{background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)}
+    .step-num.s5{background:var(--card);color:var(--muted);border:1px solid var(--border)}
+    .step-content{}
+    .step-title{font-size:0.92rem;font-weight:600;color:#f1f5f9;margin-bottom:4px}
+    .step-desc{font-size:0.8rem;color:#94a3b8;line-height:1.6}
+    .step-code{font-family:"Courier New",monospace;font-size:0.73rem;color:var(--blue);background:var(--blue-bg);padding:2px 8px;border-radius:4px;display:inline-block;margin-top:4px}
+    .calibration-box{background:var(--card);border:1px solid var(--green-b);border-radius:12px;padding:24px}
+    .cal-title{font-size:0.85rem;font-weight:600;color:#f1f5f9;margin-bottom:16px}
+    .cal-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;border-bottom:1px solid var(--border);font-size:0.8rem}
+    .cal-row:last-child{border-bottom:none}
+    .cal-type{color:#94a3b8}
+    .cal-bar-wrap{display:flex;align-items:center;gap:10px;flex:1;margin:0 16px}
+    .cal-bar{height:5px;border-radius:3px;background:var(--border);flex:1;overflow:hidden}
+    .cal-fill{height:100%;border-radius:3px;background:var(--green)}
+    .cal-weight{font-family:"Courier New",monospace;font-size:0.75rem;color:var(--green);font-weight:700;min-width:36px;text-align:right}
+    .cal-acc{font-size:0.72rem;color:var(--muted);min-width:60px;text-align:right}
+
+    /* OUTCOME EXAMPLE */
+    .outcome-shell{background:#07090f;border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:700px}
+    .shell-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:8px}
+    .dot{width:9px;height:9px;border-radius:50%}
+    .shell-title{font-size:0.72rem;color:var(--muted);margin-left:4px}
+    .shell-badge{margin-left:auto;font-size:0.65rem;color:var(--green);background:var(--green-bg);padding:2px 10px;border-radius:999px;border:1px solid var(--green-b)}
+    .shell-body{padding:22px 26px;font-family:"Courier New",monospace;font-size:0.77rem;line-height:1.9;color:var(--muted)}
+    .s-head{color:#f1f5f9;font-weight:bold}
+    .s-green{color:var(--green)}
+    .s-blue{color:var(--blue)}
+    .s-orange{color:var(--orange)}
+    .s-red{color:var(--red)}
+
+    /* SEGMENT PRIORITY */
+    .seg-grid{display:flex;flex-direction:column;gap:8px}
+    .seg-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--surface);border-radius:8px;border:1px solid var(--border)}
+    .seg-rank{width:24px;height:24px;border-radius:50%;background:var(--card);color:var(--muted);font-size:0.7rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+    .seg-name{font-size:0.82rem;font-weight:600;color:#f1f5f9;min-width:90px}
+    .seg-reason{font-size:0.75rem;color:var(--muted)}
+
+    footer{text-align:center;padding:48px 24px;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted)}
+    footer strong{color:var(--text)}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:14px">
+    <div class="nav-brand">OPENDOOR</div>
+    <div style="color:var(--border)">|</div>
+    <div class="nav-title">Pricing &amp; Conversion Decision Engine</div>
+  </div>
+  <div class="nav-right">
+    <a class="nav-link" href="#severity">Severity</a>
+    <a class="nav-link" href="#packets">Decision Packets</a>
+    <a class="nav-link" href="#funnel">Funnel</a>
+    <a class="nav-link" href="#impact">Financial Impact</a>
+    <a class="nav-link" href="#feedback">Feedback Loop</a>
+    <div class="nav-pill">Live Agent Output</div>
+  </div>
+</nav>
+
+<!-- ALERT BANNER -->
+<div class="alert-banner">
+  <div class="alert-dot"></div>
+  <div class="alert-text">
+    <strong>CRITICAL:</strong> Pricing drift detected in all 4 markets &mdash;
+    LSR at 0.95 across portfolio, conversion deteriorating. Agent auto-generated Decision Packets.
+  </div>
+  <div class="alert-meta">March 30, 2026 &middot; Auto-scan &middot; No prompt required</div>
+</div>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Pricing &amp; Conversion Decision Engine &middot; Opendoor Analytics</div>
+  <h1>From signal detection<br/>to <em>action in seconds.</em></h1>
+  <p class="hero-sub">
+    The agent monitors pricing accuracy and funnel health continuously.
+    When it finds a problem, it doesn't surface a chart &mdash;
+    it generates a Decision Packet: what it costs, what to do, who owns it, and what outcome to expect.
+  </p>
+  <div class="hero-kpis">
+    <div class="kpi"><div class="kpi-num" style="color:var(--red)">$14.7M</div><div class="kpi-label">Annualized Margin at Risk</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--orange)">60</div><div class="kpi-label">Homes at Risk / Month</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--blue)">0.95</div><div class="kpi-label">Portfolio-wide LSR</div></div>
+    <div class="kpi"><div class="kpi-num" style="color:var(--green)">4 sec</div><div class="kpi-label">vs 4 Hours Manual</div></div>
+  </div>
+</div>
+
+<!-- SEVERITY -->
+<section id="severity">
+  <div class="inner">
+    <div class="eyebrow">Severity Framework</div>
+    <div class="sec-title">Every issue has a clear operational tier.</div>
+    <div class="sec-sub">No ambiguity about who needs to act and how fast.</div>
+    <div class="sev-grid">
+      <div class="sev-card critical">
+        <div class="sev-label">Critical</div>
+        <div class="sev-sla">Act within 24 hours</div>
+        <div class="sev-action">Escalate to VP Acquisitions + Pricing Lead. Block new offers until resolved.</div>
+      </div>
+      <div class="sev-card high">
+        <div class="sev-label">High</div>
+        <div class="sev-sla">Act within 24&ndash;72 hours</div>
+        <div class="sev-action">Owner produces action plan by next business day.</div>
+      </div>
+      <div class="sev-card medium">
+        <div class="sev-label">Medium</div>
+        <div class="sev-sla">Adjust within one week</div>
+        <div class="sev-action">Flag for weekly review. Adjust if trend continues.</div>
+      </div>
+      <div class="sev-card low">
+        <div class="sev-label">Low</div>
+        <div class="sev-sla">Informational</div>
+        <div class="sev-action">Log and monitor. Include in next weekly report.</div>
+      </div>
+      <div class="sev-card healthy">
+        <div class="sev-label">Healthy</div>
+        <div class="sev-sla">No action required</div>
+        <div class="sev-action">Continue monitoring. Use as comparison baseline.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- DECISION PACKETS -->
+<section id="packets">
+  <div class="inner">
+    <div class="eyebrow">Decision Packets &middot; Auto-generated</div>
+    <div class="sec-title">Not insights. Actions.</div>
+    <div class="sec-sub">Every packet contains evidence, ranked actions, financial impact, expected outcome, and owner. Ready to send to a VP or paste into Slack.</div>
+
+    <!-- CHARLOTTE PACKET -->
+    <div class="packet critical">
+      <div class="packet-header critical">
+        <div class="packet-title">Pricing Drift + Velocity Breakdown &mdash; Charlotte</div>
+        <div class="packet-meta">
+          <span class="badge critical">Critical</span>
+          <span class="sla-chip">SLA: Immediate &mdash; 24 hours</span>
+          <span class="sla-chip">Owner: market-ops</span>
+        </div>
+      </div>
+      <div class="packet-body">
+        <div class="packet-col">
+          <div class="col-label">Evidence</div>
+          <div class="evidence-list">
+            <div class="ev-row"><span class="ev-label">List-to-Sale Ratio</span><span class="ev-val bad">0.95 (warn: 0.98)</span></div>
+            <div class="ev-row"><span class="ev-label">Conversion Rate WoW</span><span class="ev-val bad">&minus;5.9 pts</span></div>
+            <div class="ev-row"><span class="ev-label">Homes Sold MoM</span><span class="ev-val bad">&minus;17.1%</span></div>
+            <div class="ev-row"><span class="ev-label">DOM vs Avg</span><span class="ev-val warn">+16 days above avg</span></div>
+            <div class="ev-row"><span class="ev-label">Inventory Build</span><span class="ev-val warn">+7.4% MoM</span></div>
+            <div class="ev-row"><span class="ev-label">Pricing Signal</span><span class="ev-val bad">Drift outside acceptance behavior</span></div>
+          </div>
+          <div style="margin-top:16px">
+            <div class="col-label">Segment Priority</div>
+            <div class="seg-grid">
+              <div class="seg-row"><div class="seg-rank">1</div><div class="seg-name">mid_tier</div><div class="seg-reason">Highest volume, most elastic to pricing changes</div></div>
+              <div class="seg-row"><div class="seg-rank">2</div><div class="seg-name">entry_level</div><div class="seg-reason">Affordability sensitive &mdash; pricing deviations hit conversion hard</div></div>
+              <div class="seg-row"><div class="seg-rank">3</div><div class="seg-name">premium</div><div class="seg-reason">Lower volume, longer DOM tolerance &mdash; monitor</div></div>
+            </div>
+          </div>
+        </div>
+        <div class="packet-col">
+          <div class="col-label">Recommended Actions</div>
+          <div class="action-list">
+            <div class="action-row"><div class="action-num">1</div><div>Narrow offer band &minus;1% to &minus;2.5% in Charlotte starting with highest-DOM ZIP clusters.</div></div>
+            <div class="action-row"><div class="action-num">2</div><div>Re-run pricing model inputs for Charlotte &mdash; LSR at 0.95 indicates pricing drifting outside observed acceptance behavior.</div></div>
+            <div class="action-row"><div class="action-num">3</div><div>Prioritize disposition review for Charlotte homes &gt;60 days DOM &mdash; velocity signal indicates demand softening independent of pricing.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="packet-footer">
+        <div>
+          <div class="foot-item-label">Financial Impact</div>
+          <div class="foot-item-val" style="color:var(--red)">$2.31M / yr</div>
+          <div class="foot-item-sub">10 homes/month at risk</div>
+        </div>
+        <div>
+          <div class="foot-item-label">Expected Outcome</div>
+          <div class="foot-item-val" style="color:var(--green)">+29.9% acceptance</div>
+          <div class="foot-item-sub">6 homes/month recovered</div>
+        </div>
+        <div>
+          <div class="foot-item-label">Timeframe</div>
+          <div class="foot-item-val" style="color:var(--blue)">2&ndash;3 weeks</div>
+          <div class="foot-item-sub">Track LSR weekly</div>
+        </div>
+        <div>
+          <div class="foot-item-label">Confidence</div>
+          <div class="foot-item-val" style="color:var(--orange)">Medium-High</div>
+          <div class="foot-item-sub">Weight: 0.82</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- DALLAS PACKET -->
+    <div class="packet high">
+      <div class="packet-header high">
+        <div class="packet-title">Conversion Collapse &mdash; Dallas (Highest Volume Market)</div>
+        <div class="packet-meta">
+          <span class="badge high">High</span>
+          <span class="sla-chip">SLA: 24&ndash;72 hours</span>
+          <span class="sla-chip">Owner: pricing</span>
+        </div>
+      </div>
+      <div class="packet-body">
+        <div class="packet-col">
+          <div class="col-label">Evidence</div>
+          <div class="evidence-list">
+            <div class="ev-row"><span class="ev-label">List-to-Sale Ratio</span><span class="ev-val bad">0.95 (warn: 0.98)</span></div>
+            <div class="ev-row"><span class="ev-label">Conversion Rate WoW</span><span class="ev-val bad">&minus;6.6 pts (worst in portfolio)</span></div>
+            <div class="ev-row"><span class="ev-label">Homes Sold MoM</span><span class="ev-val bad">&minus;16.0%</span></div>
+            <div class="ev-row"><span class="ev-label">Inventory Build</span><span class="ev-val warn">+7.3% MoM</span></div>
+            <div class="ev-row"><span class="ev-label">DOM vs Avg</span><span class="ev-val warn">+15 days above avg</span></div>
+            <div class="ev-row"><span class="ev-label">Bottleneck</span><span class="ev-val warn">Multi-factor conversion pressure</span></div>
+          </div>
+        </div>
+        <div class="packet-col">
+          <div class="col-label">Recommended Actions</div>
+          <div class="action-list">
+            <div class="action-row"><div class="action-num">1</div><div>Narrow offer band &minus;1% to &minus;2.5% in Dallas. Dallas has highest volume &mdash; pricing correction has largest absolute impact on portfolio.</div></div>
+            <div class="action-row"><div class="action-num">2</div><div>Investigate multi-factor conversion pressure &mdash; both pricing and demand signals active. Isolate by ZIP to determine if pricing-specific or demand-structural.</div></div>
+            <div class="action-row"><div class="action-num">3</div><div>Pause acquisitions in highest-DOM ZIPs until absorption rate stabilizes above 25%.</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="packet-footer">
+        <div>
+          <div class="foot-item-label">Financial Impact</div>
+          <div class="foot-item-val" style="color:var(--red)">$5.12M / yr</div>
+          <div class="foot-item-sub">19 homes/month at risk</div>
+        </div>
+        <div>
+          <div class="foot-item-label">Expected Outcome</div>
+          <div class="foot-item-val" style="color:var(--green)">+29.9% acceptance</div>
+          <div class="foot-item-sub">$426k margin/month recovered</div>
+        </div>
+        <div>
+          <div class="foot-item-label">Timeframe</div>
+          <div class="foot-item-val" style="color:var(--blue)">2&ndash;3 weeks</div>
+          <div class="foot-item-sub">Higher volume = faster signal</div>
+        </div>
+        <div>
+          <div class="foot-item-label">Confidence</div>
+          <div class="foot-item-val" style="color:var(--orange)">Medium-High</div>
+          <div class="foot-item-sub">Weight: 0.82</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FUNNEL DIAGNOSTICS -->
+<section id="funnel">
+  <div class="inner">
+    <div class="eyebrow">Funnel Diagnostics &middot; analyze_funnel_drop()</div>
+    <div class="sec-title">Where exactly is conversion breaking?</div>
+    <div class="sec-sub">Stage-by-stage breakdown across all markets. The bottleneck signal tells the pricing team where to focus first.</div>
+    <div class="funnel-grid">
+
+      <div class="funnel-card" style="border-color:var(--red-b)">
+        <div class="funnel-market">Charlotte</div>
+        <div class="funnel-bottleneck">VELOCITY &mdash; DOM expanding. Demand softening or pricing mismatch.</div>
+        <div class="stage-row"><span class="stage-name">Inventory</span><div class="stage-right"><span class="stage-val">2,900 (+7.4%)</span><span class="stage-signal warn">building</span></div></div>
+        <div class="stage-row"><span class="stage-name">Conversion Rate</span><div class="stage-right"><span class="stage-val">20.0% (&minus;5.9pts)</span><span class="stage-signal bad">deteriorating</span></div></div>
+        <div class="stage-row"><span class="stage-name">Acceptance Proxy (LSR)</span><div class="stage-right"><span class="stage-val">0.95</span><span class="stage-signal warn">below benchmark</span></div></div>
+        <div class="stage-row"><span class="stage-name">Days on Market</span><div class="stage-right"><span class="stage-val">49 (+6 days)</span><span class="stage-signal warn">slowing</span></div></div>
+        <div class="stage-row"><span class="stage-name">Homes Sold MoM</span><div class="stage-right"><span class="stage-val">580 (&minus;17.1%)</span><span class="stage-signal bad">declining</span></div></div>
+      </div>
+
+      <div class="funnel-card" style="border-color:var(--orange-b)">
+        <div class="funnel-market">Dallas</div>
+        <div class="funnel-bottleneck">CONVERSION &mdash; Fewer listings converting to sales. Multi-factor pressure.</div>
+        <div class="stage-row"><span class="stage-name">Inventory</span><div class="stage-right"><span class="stage-val">4,400 (+7.3%)</span><span class="stage-signal warn">building</span></div></div>
+        <div class="stage-row"><span class="stage-name">Conversion Rate</span><div class="stage-right"><span class="stage-val">23.9% (&minus;6.6pts)</span><span class="stage-signal bad">deteriorating</span></div></div>
+        <div class="stage-row"><span class="stage-name">Acceptance Proxy (LSR)</span><div class="stage-right"><span class="stage-val">0.95</span><span class="stage-signal warn">below benchmark</span></div></div>
+        <div class="stage-row"><span class="stage-name">Days on Market</span><div class="stage-right"><span class="stage-val">46 (+5 days)</span><span class="stage-signal ok">normal</span></div></div>
+        <div class="stage-row"><span class="stage-name">Homes Sold MoM</span><div class="stage-right"><span class="stage-val">1,050 (&minus;16.0%)</span><span class="stage-signal bad">declining</span></div></div>
+      </div>
+
+      <div class="funnel-card" style="border-color:var(--orange-b)">
+        <div class="funnel-market">Atlanta</div>
+        <div class="funnel-bottleneck">CONVERSION &mdash; Fewer listings converting to sales. Multi-factor pressure.</div>
+        <div class="stage-row"><span class="stage-name">Inventory</span><div class="stage-right"><span class="stage-val">3,400 (+9.7%)</span><span class="stage-signal warn">building</span></div></div>
+        <div class="stage-row"><span class="stage-name">Conversion Rate</span><div class="stage-right"><span class="stage-val">22.1% (&minus;6.3pts)</span><span class="stage-signal bad">deteriorating</span></div></div>
+        <div class="stage-row"><span class="stage-name">Acceptance Proxy (LSR)</span><div class="stage-right"><span class="stage-val">0.95</span><span class="stage-signal warn">below benchmark</span></div></div>
+        <div class="stage-row"><span class="stage-name">Days on Market</span><div class="stage-right"><span class="stage-val">48 (+5 days)</span><span class="stage-signal ok">normal</span></div></div>
+        <div class="stage-row"><span class="stage-name">Homes Sold MoM</span><div class="stage-right"><span class="stage-val">750 (&minus;14.8%)</span><span class="stage-signal bad">declining</span></div></div>
+      </div>
+
+      <div class="funnel-card" style="border-color:var(--orange-b)">
+        <div class="funnel-market">Phoenix</div>
+        <div class="funnel-bottleneck">CONVERSION &mdash; Fewer listings converting to sales. Multi-factor pressure.</div>
+        <div class="stage-row"><span class="stage-name">Inventory</span><div class="stage-right"><span class="stage-val">4,000 (+8.1%)</span><span class="stage-signal warn">building</span></div></div>
+        <div class="stage-row"><span class="stage-name">Conversion Rate</span><div class="stage-right"><span class="stage-val">23.8% (&minus;5.9pts)</span><span class="stage-signal bad">deteriorating</span></div></div>
+        <div class="stage-row"><span class="stage-name">Acceptance Proxy (LSR)</span><div class="stage-right"><span class="stage-val">0.95</span><span class="stage-signal warn">below benchmark</span></div></div>
+        <div class="stage-row"><span class="stage-name">Days on Market</span><div class="stage-right"><span class="stage-val">50 (+4 days)</span><span class="stage-signal ok">normal</span></div></div>
+        <div class="stage-row"><span class="stage-name">Homes Sold MoM</span><div class="stage-right"><span class="stage-val">950 (&minus;13.6%)</span><span class="stage-signal bad">declining</span></div></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FINANCIAL IMPACT -->
+<section id="impact">
+  <div class="inner">
+    <div class="eyebrow">Financial Impact &middot; estimate_business_impact()</div>
+    <div class="sec-title">What is this actually costing us?</div>
+    <div class="sec-sub">Every issue translated into homes per month, margin at risk, and holding cost exposure. Executive-ready numbers.</div>
+
+    <table class="impact-table">
+      <thead>
+        <tr>
+          <th>Market</th>
+          <th>Homes at Risk / Mo</th>
+          <th>Margin at Risk / Mo</th>
+          <th>Annualized Margin Risk</th>
+          <th>Hold Cost / Home</th>
+          <th>Total Hold Cost / Mo</th>
+          <th>Priority</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="mkt-name">Dallas</div></td>
+          <td><div class="money red">19</div></td>
+          <td><div class="money red">$426,360</div></td>
+          <td><div class="money red">$5,116,320</div></td>
+          <td><div class="money orange">$475</div></td>
+          <td><div class="money orange">$2,090,000</div></td>
+          <td><span class="badge high">#1</span></td>
+        </tr>
+        <tr>
+          <td><div class="mkt-name">Phoenix</div></td>
+          <td><div class="money red">17</div></td>
+          <td><div class="money red">$362,780</div></td>
+          <td><div class="money red">$4,353,360</div></td>
+          <td><div class="money orange">$380</div></td>
+          <td><div class="money orange">$1,520,000</div></td>
+          <td><span class="badge high">#2</span></td>
+        </tr>
+        <tr>
+          <td><div class="mkt-name">Atlanta</div></td>
+          <td><div class="money red">14</div></td>
+          <td><div class="money red">$244,860</div></td>
+          <td><div class="money red">$2,938,320</div></td>
+          <td><div class="money orange">$475</div></td>
+          <td><div class="money orange">$1,615,000</div></td>
+          <td><span class="badge high">#3</span></td>
+        </tr>
+        <tr>
+          <td><div class="mkt-name">Charlotte</div></td>
+          <td><div class="money red">10</div></td>
+          <td><div class="money red">$192,500</div></td>
+          <td><div class="money red">$2,310,000</div></td>
+          <td><div class="money orange">$570</div></td>
+          <td><div class="money orange">$1,653,000</div></td>
+          <td><span class="badge high">#4</span></td>
+        </tr>
+        <tr class="total-row">
+          <td><div class="mkt-name">PORTFOLIO TOTAL</div></td>
+          <td><div class="money red">60</div></td>
+          <td><div class="money red">$1,226,500</div></td>
+          <td><div class="money red">$14,718,000</div></td>
+          <td><div class="money">&mdash;</div></td>
+          <td><div class="money red">$6,878,000</div></td>
+          <td><span class="badge critical">ACT NOW</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- FEEDBACK LOOP -->
+<section id="feedback">
+  <div class="inner">
+    <div class="eyebrow">Feedback Loop &middot; The System Gets Smarter</div>
+    <div class="sec-title">Predictions tracked. Weights recalibrated.</div>
+    <div class="sec-sub">Every Decision Packet is logged. When outcomes are recorded, confidence weights update automatically. The agent improves with every cycle.</div>
+
+    <div class="grid2" style="margin-bottom:32px">
+      <div class="loop-steps">
+        <div class="loop-step">
+          <div class="step-num s1">1</div>
+          <div class="step-content">
+            <div class="step-title">Decision Packet Generated</div>
+            <div class="step-desc">Agent detects issue, generates recommendation with expected outcome. Automatically logged with a unique rec_id.</div>
+            <div class="step-code">log_recommendation(rec_id="REC-0001")</div>
+          </div>
+        </div>
+        <div class="loop-step">
+          <div class="step-num s2">2</div>
+          <div class="step-content">
+            <div class="step-title">Operator Records Action</div>
+            <div class="step-desc">Owner logs whether the recommendation was taken, partial, deferred, or rejected.</div>
+            <div class="step-code">record_action_taken("REC-0001", "taken")</div>
+          </div>
+        </div>
+        <div class="loop-step">
+          <div class="step-num s3">3</div>
+          <div class="step-content">
+            <div class="step-title">Outcome Measured</div>
+            <div class="step-desc">Next week: actual KPI change recorded vs what the agent predicted.</div>
+            <div class="step-code">record_outcome("REC-0001", observed=24.1, expected=29.9)</div>
+          </div>
+        </div>
+        <div class="loop-step">
+          <div class="step-num s4">4</div>
+          <div class="step-content">
+            <div class="step-title">Confidence Recalibrated</div>
+            <div class="step-desc">Confidence weights blended with observed accuracy. More data = more weight to observed vs prior.</div>
+            <div class="step-code">recalibrate_confidence() &rarr; weights updated</div>
+          </div>
+        </div>
+        <div class="loop-step">
+          <div class="step-num s5">5</div>
+          <div class="step-content">
+            <div class="step-title">Weekly Learning Report</div>
+            <div class="step-desc">Feedback summary included in next briefing. Shows action rates, accuracy by market, calibration status.</div>
+            <div class="step-code">get_feedback_summary() &rarr; included in briefing</div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div class="calibration-box">
+          <div class="cal-title">Confidence Weight Calibration &mdash; Live Example</div>
+          <div class="cal-row">
+            <div class="cal-type">pricing_misalignment</div>
+            <div class="cal-bar-wrap"><div class="cal-bar"><div class="cal-fill" style="width:82%"></div></div></div>
+            <div class="cal-weight">0.819</div>
+            <div class="cal-acc">acc: 0.806</div>
+          </div>
+          <div class="cal-row">
+            <div class="cal-type">inventory_aging</div>
+            <div class="cal-bar-wrap"><div class="cal-bar"><div class="cal-fill" style="width:78%"></div></div></div>
+            <div class="cal-weight">0.780</div>
+            <div class="cal-acc">prior only</div>
+          </div>
+          <div class="cal-row">
+            <div class="cal-type">funnel_deterioration</div>
+            <div class="cal-bar-wrap"><div class="cal-bar"><div class="cal-fill" style="width:71%"></div></div></div>
+            <div class="cal-weight">0.710</div>
+            <div class="cal-acc">prior only</div>
+          </div>
+          <div class="cal-row">
+            <div class="cal-type">margin_compression</div>
+            <div class="cal-bar-wrap"><div class="cal-bar"><div class="cal-fill" style="width:68%"></div></div></div>
+            <div class="cal-weight">0.680</div>
+            <div class="cal-acc">prior only</div>
+          </div>
+        </div>
+
+        <div style="margin-top:20px">
+          <div class="outcome-shell">
+            <div class="shell-bar">
+              <div class="dot" style="background:#f87171"></div>
+              <div class="dot" style="background:#fbbf24"></div>
+              <div class="dot" style="background:#4ade80"></div>
+              <div class="shell-title">feedback_log.json &mdash; REC-0001</div>
+              <div class="shell-badge">accuracy: 0.806</div>
+            </div>
+            <div class="shell-body">
+              <span class="s-head">Recommendation:</span> Charlotte pricing_misalignment<br/>
+              <span class="s-head">Predicted:</span> <span class="s-blue">+29.9% acceptance rate improvement</span><br/>
+              <span class="s-head">Action taken:</span> <span class="s-green">taken</span> &mdash; narrowed offer band &minus;2.5%<br/>
+              <span class="s-head">Observed:</span> <span class="s-green">+24.1% acceptance improvement</span><br/>
+              <span class="s-head">Accuracy:</span> <span class="s-green">0.806</span><br/>
+              <span class="s-head">Weight update:</span> 0.820 &rarr; <span class="s-green">0.819</span> (stable)<br/>
+              <span class="s-head">Status:</span> <span class="s-green">Prediction accuracy above 0.75 &mdash; weights stable.</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <strong>Opendoor Pricing &amp; Conversion Decision Engine</strong> &middot;
+  Claude API (claude-opus-4-6) &middot; Native tool use &middot;
+  Deterministic detection &rarr; LLM explanation &rarr; Feedback loop &middot;
+  <strong>Built for the Agentic Analytics Engineer role.</strong>
+</footer>
+
+</body>
+</html>

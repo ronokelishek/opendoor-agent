@@ -1,0 +1,251 @@
+[
+  {
+    "alert_id": "INVENTORY_AGING_Atlanta_entry_level_2024-12-23",
+    "rank": 1,
+    "severity": "high",
+    "issue_type": "INVENTORY_AGING",
+    "title": "Inventory Aging \u2014 Atlanta Entry Level",
+    "market": "Atlanta",
+    "segment": "entry_level",
+    "week_start": "2024-12-23",
+    "owner": "market-ops",
+    "confidence": "Medium-High",
+    "executive_summary": "Atlanta entry level inventory is aging materially, with 5.8% of active listings (14 homes) exceeding 90 days on market and average DOM now at 52.9 days. The trend has been worsening for multiple consecutive weeks, indicating a structural demand-supply imbalance rather than a temporary seasonal blip. Without intervention, these homes will require markdown pricing to clear, compressing resale margins from current 6.2%.",
+    "recommended_actions": [
+      "Market-ops team: Implement an immediate 3% price reduction on all Atlanta entry level listings exceeding 75 days DOM. For homes over 100 days, apply a 5% reduction. Execute price changes by end of business Friday.",
+      "Pricing team: Review acquisition offers in Atlanta entry level for the past 8 weeks and identify if any AVM segments or zip codes show systematic overvaluation at resale. Pause new acquisitions in zip codes with 3+ aged homes until the resale velocity audit is complete.",
+      "Analytics team: Add a leading indicator dashboard tracking Atlanta buyer demand signals (showings per listing, offer receipt rate) to provide earlier warning of demand softening. Target: 2-week lead time before DOM breach. Present dashboard to market-ops lead by next Monday."
+    ],
+    "key_metrics": {
+      "aging_inventory_rate": 0.0578,
+      "avg_days_on_market": 52.9,
+      "inventory_count": 246,
+      "avg_resale_margin": 0.0619
+    },
+    "wow_deltas": {
+      "avg_days_on_market_wow_delta": 3.37,
+      "aging_inventory_rate_wow_delta": 0.0172,
+      "avg_resale_margin_wow_delta": 0.0021
+    },
+    "analysis_mode": "mock"
+  },
+  {
+    "alert_id": "INVENTORY_AGING_Atlanta_mid_tier_2024-12-23",
+    "rank": 2,
+    "severity": "high",
+    "issue_type": "INVENTORY_AGING",
+    "title": "Inventory Aging \u2014 Atlanta Mid Tier",
+    "market": "Atlanta",
+    "segment": "mid_tier",
+    "week_start": "2024-12-23",
+    "owner": "market-ops",
+    "confidence": "Medium-High",
+    "executive_summary": "Atlanta mid tier inventory is aging materially, with 10.7% of active listings (17 homes) exceeding 90 days on market and average DOM now at 60.0 days. The trend has been worsening for multiple consecutive weeks, indicating a structural demand-supply imbalance rather than a temporary seasonal blip. Without intervention, these homes will require markdown pricing to clear, compressing resale margins from current 5.4%.",
+    "recommended_actions": [
+      "Market-ops team: Implement an immediate 3% price reduction on all Atlanta mid tier listings exceeding 75 days DOM. For homes over 100 days, apply a 5% reduction. Execute price changes by end of business Friday.",
+      "Pricing team: Review acquisition offers in Atlanta mid tier for the past 8 weeks and identify if any AVM segments or zip codes show systematic overvaluation at resale. Pause new acquisitions in zip codes with 3+ aged homes until the resale velocity audit is complete.",
+      "Analytics team: Add a leading indicator dashboard tracking Atlanta buyer demand signals (showings per listing, offer receipt rate) to provide earlier warning of demand softening. Target: 2-week lead time before DOM breach. Present dashboard to market-ops lead by next Monday."
+    ],
+    "key_metrics": {
+      "aging_inventory_rate": 0.1065,
+      "avg_days_on_market": 60.0,
+      "inventory_count": 164,
+      "avg_resale_margin": 0.0537
+    },
+    "wow_deltas": {
+      "avg_days_on_market_wow_delta": 4.3,
+      "aging_inventory_rate_wow_delta": 0.0313,
+      "avg_resale_margin_wow_delta": -0.0003
+    },
+    "analysis_mode": "mock"
+  },
+  {
+    "alert_id": "INVENTORY_AGING_Atlanta_premium_2024-12-23",
+    "rank": 3,
+    "severity": "high",
+    "issue_type": "INVENTORY_AGING",
+    "title": "Inventory Aging \u2014 Atlanta Premium",
+    "market": "Atlanta",
+    "segment": "premium",
+    "week_start": "2024-12-23",
+    "owner": "market-ops",
+    "confidence": "High",
+    "executive_summary": "Atlanta premium inventory is aging materially, with 24.1% of active listings (20 homes) exceeding 90 days on market and average DOM now at 73.9 days. The trend has been worsening for multiple consecutive weeks, indicating a structural demand-supply imbalance rather than a temporary seasonal blip. Without intervention, these homes will require markdown pricing to clear, compressing resale margins from current 4.2%.",
+    "recommended_actions": [
+      "Market-ops team: Implement an immediate 3% price reduction on all Atlanta premium listings exceeding 75 days DOM. For homes over 100 days, apply a 5% reduction. Execute price changes by end of business Friday.",
+      "Pricing team: Review acquisition offers in Atlanta premium for the past 8 weeks and identify if any AVM segments or zip codes show systematic overvaluation at resale. Pause new acquisitions in zip codes with 3+ aged homes until the resale velocity audit is complete.",
+      "Analytics team: Add a leading indicator dashboard tracking Atlanta buyer demand signals (showings per listing, offer receipt rate) to provide earlier warning of demand softening. Target: 2-week lead time before DOM breach. Present dashboard to market-ops lead by next Monday."
+    ],
+    "key_metrics": {
+      "aging_inventory_rate": 0.241,
+      "avg_days_on_market": 73.9,
+      "inventory_count": 86,
+      "avg_resale_margin": 0.042
+    },
+    "wow_deltas": {
+      "avg_days_on_market_wow_delta": 5.17,
+      "aging_inventory_rate_wow_delta": 0.0546,
+      "avg_resale_margin_wow_delta": 0.0025
+    },
+    "analysis_mode": "mock"
+  },
+  {
+    "alert_id": "FUNNEL_DETERIORATION_Dallas_premium_2024-12-23",
+    "rank": 4,
+    "severity": "high",
+    "issue_type": "FUNNEL_DETERIORATION",
+    "title": "Funnel Deterioration \u2014 Dallas Premium",
+    "market": "Dallas",
+    "segment": "premium",
+    "week_start": "2024-12-23",
+    "owner": "growth",
+    "confidence": "High",
+    "executive_summary": "Dallas premium is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 36.7% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 10.0%. At 60 leads this week, the degraded conversion rate translates to approximately 12 fewer offers generated versus the historical baseline \u2014 a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.",
+    "recommended_actions": [
+      "Growth team: Pull the Dallas offer funnel drop-off report by step (lead received \u2192 offer generated \u2192 offer viewed \u2192 offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.",
+      "Operations team: Audit Dallas offer turnaround SLA compliance for the past 2 weeks. If median offer generation time exceeds 24 hours, escalate to ops capacity planning and consider temporary underwriting surge support. SLA audit to be completed by EOD tomorrow.",
+      "Pricing team: Compare Dallas premium Opendoor offers against Zillow/Offerpad comparable offers for the same homes (use the 10 most recent rejections). If Opendoor is systematically below competitor offers by >2%, initiate a competitive adjustment review this week."
+    ],
+    "key_metrics": {
+      "lead_to_offer_rate": 0.3667,
+      "offer_to_close_rate": 0.5,
+      "funnel_efficiency": 0.1,
+      "lead_count": 60,
+      "offer_count": 22,
+      "close_count": 6
+    },
+    "wow_deltas": {
+      "lead_to_offer_rate_wow_delta": -0.044,
+      "offer_to_close_rate_wow_delta": -0.0833,
+      "funnel_efficiency_wow_delta": -0.025
+    },
+    "analysis_mode": "mock"
+  },
+  {
+    "alert_id": "PRICING_MISALIGNMENT_Phoenix_mid_tier_2024-12-23",
+    "rank": 5,
+    "severity": "high",
+    "issue_type": "PRICING_MISALIGNMENT",
+    "title": "Pricing Misalignment \u2014 Phoenix Mid Tier",
+    "market": "Phoenix",
+    "segment": "mid_tier",
+    "week_start": "2024-12-23",
+    "owner": "pricing",
+    "confidence": "High",
+    "executive_summary": "Opendoor's offer prices in Phoenix mid tier are running 5.8% above market estimated values, triggering a seller acceptance rate collapse to 49.4% \u2014 down roughly 12 percentage points from prior-week levels. At current offer volume, this misalignment is costing approximately 9 accepted offers per week and eroding acquisition margins to 1.4%.",
+    "recommended_actions": [
+      "Pricing team: Pull all Phoenix mid tier comparable sales from the past 30 days and audit the AVM inputs by zip code. Apply a manual -3% offer adjustment across the segment by EOD tomorrow while the model recalibration is completed.",
+      "Analytics team: Set a real-time alert threshold so that any market/segment combination where avg_offer_vs_market_pct exceeds +2% for 3 consecutive days triggers an automated Slack notification to the Pricing Lead. Implement by end of this sprint.",
+      "Operations team: Place a temporary hold on Phoenix mid tier acquisitions above $450K list price until the AVM recalibration is validated \u2014 this caps the margin exposure while preserving volume on the lower end of the segment. Review hold in 72 hours."
+    ],
+    "key_metrics": {
+      "avg_offer_vs_market_pct": 0.0583,
+      "offer_acceptance_rate": 0.4935,
+      "avg_acquisition_margin": 0.0136,
+      "offer_count": 77,
+      "accepted_offer_count": 38
+    },
+    "wow_deltas": {
+      "offer_acceptance_rate_wow_delta": -0.0494,
+      "avg_offer_vs_market_pct_wow_delta": 0.001,
+      "avg_acquisition_margin_wow_delta": -0.0049
+    },
+    "analysis_mode": "mock"
+  },
+  {
+    "alert_id": "FUNNEL_DETERIORATION_Miami_mid_tier_2024-12-23",
+    "rank": 6,
+    "severity": "medium",
+    "issue_type": "FUNNEL_DETERIORATION",
+    "title": "Funnel Deterioration \u2014 Miami Mid Tier",
+    "market": "Miami",
+    "segment": "mid_tier",
+    "week_start": "2024-12-23",
+    "owner": "growth",
+    "confidence": "Medium-High",
+    "executive_summary": "Miami mid tier is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 53.5% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 27.2%. At 114 leads this week, the degraded conversion rate translates to approximately 5 fewer offers generated versus the historical baseline \u2014 a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.",
+    "recommended_actions": [
+      "Growth team: Pull the Miami offer funnel drop-off report by step (lead received \u2192 offer generated \u2192 offer viewed \u2192 offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.",
+      "Operations team: Audit Miami offer turnaround SLA compliance for the past 2 weeks. If median offer generation time exceeds 24 hours, escalate to ops capacity planning and consider temporary underwriting surge support. SLA audit to be completed by EOD tomorrow.",
+      "Pricing team: Compare Miami mid tier Opendoor offers against Zillow/Offerpad comparable offers for the same homes (use the 10 most recent rejections). If Opendoor is systematically below competitor offers by >2%, initiate a competitive adjustment review this week."
+    ],
+    "key_metrics": {
+      "lead_to_offer_rate": 0.5351,
+      "offer_to_close_rate": 0.7209,
+      "funnel_efficiency": 0.2719,
+      "lead_count": 114,
+      "offer_count": 61,
+      "close_count": 31
+    },
+    "wow_deltas": {
+      "lead_to_offer_rate_wow_delta": -0.0459,
+      "offer_to_close_rate_wow_delta": 0.0136,
+      "funnel_efficiency_wow_delta": -0.0043
+    },
+    "analysis_mode": "mock"
+  },
+  {
+    "alert_id": "FUNNEL_DETERIORATION_Dallas_entry_level_2024-12-23",
+    "rank": 7,
+    "severity": "low",
+    "issue_type": "FUNNEL_DETERIORATION",
+    "title": "Funnel Deterioration \u2014 Dallas Entry Level",
+    "market": "Dallas",
+    "segment": "entry_level",
+    "week_start": "2024-12-23",
+    "owner": "growth",
+    "confidence": "Medium-High",
+    "executive_summary": "Dallas entry level is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 39.5% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 17.4%. At 172 leads this week, the degraded conversion rate translates to approximately 31 fewer offers generated versus the historical baseline \u2014 a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.",
+    "recommended_actions": [
+      "Growth team: Pull the Dallas offer funnel drop-off report by step (lead received \u2192 offer generated \u2192 offer viewed \u2192 offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.",
+      "Operations team: Audit Dallas offer turnaround SLA compliance for the past 2 weeks. If median offer generation time exceeds 24 hours, escalate to ops capacity planning and consider temporary underwriting surge support. SLA audit to be completed by EOD tomorrow.",
+      "Pricing team: Compare Dallas entry level Opendoor offers against Zillow/Offerpad comparable offers for the same homes (use the 10 most recent rejections). If Opendoor is systematically below competitor offers by >2%, initiate a competitive adjustment review this week."
+    ],
+    "key_metrics": {
+      "lead_to_offer_rate": 0.3953,
+      "offer_to_close_rate": 0.6667,
+      "funnel_efficiency": 0.1744,
+      "lead_count": 172,
+      "offer_count": 68,
+      "close_count": 30
+    },
+    "wow_deltas": {
+      "lead_to_offer_rate_wow_delta": -0.0282,
+      "offer_to_close_rate_wow_delta": 0,
+      "funnel_efficiency_wow_delta": -0.0138
+    },
+    "analysis_mode": "mock"
+  },
+  {
+    "alert_id": "FUNNEL_DETERIORATION_Dallas_mid_tier_2024-12-23",
+    "rank": 8,
+    "severity": "low",
+    "issue_type": "FUNNEL_DETERIORATION",
+    "title": "Funnel Deterioration \u2014 Dallas Mid Tier",
+    "market": "Dallas",
+    "segment": "mid_tier",
+    "week_start": "2024-12-23",
+    "owner": "growth",
+    "confidence": "Medium-High",
+    "executive_summary": "Dallas mid tier is showing a deteriorating seller conversion funnel: lead-to-offer rate has fallen to 38.5% (down ~3% WoW for multiple consecutive weeks), reducing overall funnel efficiency to 16.5%. At 109 leads this week, the degraded conversion rate translates to approximately 21 fewer offers generated versus the historical baseline \u2014 a volume shortfall that will flow through to close counts in 2-3 weeks if not addressed.",
+    "recommended_actions": [
+      "Growth team: Pull the Dallas offer funnel drop-off report by step (lead received \u2192 offer generated \u2192 offer viewed \u2192 offer accepted) for the past 3 weeks and identify the specific step where fall-off increased. Report findings to leadership by Wednesday.",
+      "Operations team: Audit Dallas offer turnaround SLA compliance for the past 2 weeks. If median offer generation time exceeds 24 hours, escalate to ops capacity planning and consider temporary underwriting surge support. SLA audit to be completed by EOD tomorrow.",
+      "Pricing team: Compare Dallas mid tier Opendoor offers against Zillow/Offerpad comparable offers for the same homes (use the 10 most recent rejections). If Opendoor is systematically below competitor offers by >2%, initiate a competitive adjustment review this week."
+    ],
+    "key_metrics": {
+      "lead_to_offer_rate": 0.3853,
+      "offer_to_close_rate": 0.6429,
+      "funnel_efficiency": 0.1651,
+      "lead_count": 109,
+      "offer_count": 42,
+      "close_count": 18
+    },
+    "wow_deltas": {
+      "lead_to_offer_rate_wow_delta": -0.0299,
+      "offer_to_close_rate_wow_delta": -0.0238,
+      "funnel_efficiency_wow_delta": -0.0213
+    },
+    "analysis_mode": "mock"
+  }
+]

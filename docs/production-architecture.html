@@ -1,0 +1,723 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Opendoor — Production Architecture on AWS</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#09090f;--surface:#0f1018;--card:#13151f;--border:#1e2235;
+      --text:#e2e8f0;--muted:#64748b;--dim:#1e2235;
+      --blue:#38bdf8;--blue-bg:#071e33;--blue-b:#0e3a5e;
+      --green:#4ade80;--green-bg:#071f12;--green-b:#0f3d20;
+      --purple:#c084fc;--purple-bg:#140b22;--purple-b:#2d1650;
+      --orange:#fb923c;--orange-bg:#1f1005;--orange-b:#3d2005;
+      --red:#f87171;--red-bg:#1f0808;--red-b:#3d1010;
+      --yellow:#fbbf24;--yellow-bg:#1f1a05;--yellow-b:#3d3205;
+      --aws:#ff9900;--aws-bg:#1f1000;--aws-b:#3d2500;
+      --snow:#29b5e8;--snow-bg:#031520;--snow-b:#0a3040;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+    nav{display:flex;justify-content:space-between;align-items:center;padding:13px 48px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100;flex-wrap:wrap;gap:10px}
+    .nav-brand{font-size:0.85rem;font-weight:700;color:var(--blue);letter-spacing:.06em}
+    .nav-title{font-size:0.78rem;color:var(--muted)}
+    .nav-right{display:flex;gap:16px;align-items:center;flex-wrap:wrap}
+    .nav-link{font-size:0.75rem;color:var(--muted);text-decoration:none}
+    .nav-link:hover{color:var(--text)}
+    .nav-pill{font-size:0.68rem;padding:3px 12px;border-radius:999px;background:var(--aws-bg);color:var(--aws);border:1px solid var(--aws-b)}
+
+    section{padding:64px 48px;border-top:1px solid var(--border)}
+    .inner{max-width:1280px;margin:0 auto}
+    .sec-eyebrow{font-size:0.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .sec-title{font-size:1.7rem;font-weight:700;color:var(--text);margin-bottom:8px}
+    .sec-sub{font-size:0.88rem;color:var(--muted);margin-bottom:40px}
+
+    /* ── HERO ── */
+    .hero{padding:56px 48px 40px;background:linear-gradient(135deg,#09090f 0%,#0d1220 50%,#09090f 100%)}
+    .hero-inner{max-width:1280px;margin:0 auto;display:flex;flex-direction:column;gap:16px}
+    .hero-badge{display:inline-flex;align-items:center;gap:8px;background:var(--aws-bg);border:1px solid var(--aws-b);border-radius:999px;padding:4px 14px;font-size:0.7rem;color:var(--aws);letter-spacing:.06em;width:fit-content}
+    .hero-title{font-size:2.2rem;font-weight:800;color:var(--text);line-height:1.2}
+    .hero-title span{color:var(--aws)}
+    .hero-sub{font-size:0.95rem;color:var(--muted);max-width:680px}
+    .hero-kpis{display:flex;gap:16px;flex-wrap:wrap;margin-top:8px}
+    .hero-kpi{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:14px 20px;min-width:160px}
+    .hero-kpi-val{font-size:1.4rem;font-weight:700;color:var(--blue)}
+    .hero-kpi-lbl{font-size:0.72rem;color:var(--muted);margin-top:2px}
+
+    /* ── FULL DIAGRAM ── */
+    .diagram-wrap{overflow-x:auto;padding-bottom:16px}
+    .diagram{display:grid;grid-template-columns:220px 40px 220px 40px 280px 40px 220px 40px 220px;align-items:start;gap:0;min-width:1160px;margin:0 auto}
+
+    /* column headers */
+    .col-header{text-align:center;font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;padding:6px 4px 14px;color:var(--muted);grid-row:1}
+
+    /* layer bands */
+    .layer-upstream{background:rgba(41,181,232,0.03);border:1px solid rgba(41,181,232,0.12);border-radius:10px;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
+    .layer-ingest{background:rgba(255,153,0,0.03);border:1px solid rgba(255,153,0,0.12);border-radius:10px;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
+    .layer-warehouse{background:rgba(41,181,232,0.05);border:1px solid rgba(41,181,232,0.2);border-radius:10px;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
+    .layer-agent{background:rgba(192,132,252,0.03);border:1px solid rgba(192,132,252,0.15);border-radius:10px;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
+    .layer-output{background:rgba(74,222,128,0.03);border:1px solid rgba(74,222,128,0.12);border-radius:10px;padding:16px 12px;display:flex;flex-direction:column;gap:10px}
+
+    /* system boxes */
+    .sys-box{border-radius:6px;padding:10px 12px;border:1px solid}
+    .sys-name{font-size:0.78rem;font-weight:600;color:var(--text)}
+    .sys-desc{font-size:0.68rem;color:var(--muted);margin-top:3px;line-height:1.4}
+    .sys-tag{display:inline-block;font-size:0.6rem;padding:2px 8px;border-radius:4px;margin-top:6px;letter-spacing:.04em}
+
+    /* color variants */
+    .box-blue{background:var(--blue-bg);border-color:var(--blue-b)}
+    .box-aws{background:var(--aws-bg);border-color:var(--aws-b)}
+    .box-snow{background:var(--snow-bg);border-color:var(--snow-b)}
+    .box-purple{background:var(--purple-bg);border-color:var(--purple-b)}
+    .box-green{background:var(--green-bg);border-color:var(--green-b)}
+    .box-orange{background:var(--orange-bg);border-color:var(--orange-b)}
+    .box-yellow{background:var(--yellow-bg);border-color:var(--yellow-b)}
+
+    .tag-blue{background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b)}
+    .tag-aws{background:var(--aws-bg);color:var(--aws)}
+    .tag-snow{background:var(--snow-bg);color:var(--snow)}
+    .tag-purple{background:var(--purple-bg);color:var(--purple)}
+    .tag-green{background:var(--green-bg);color:var(--green)}
+
+    /* arrows */
+    .arrow-col{display:flex;flex-direction:column;align-items:center;justify-content:center;padding-top:30px;gap:0}
+    .arrow-line{width:2px;flex:1;background:linear-gradient(to bottom,transparent,var(--dim),transparent);min-height:60px}
+    .arrow-head{color:var(--muted);font-size:1.1rem;margin-top:-4px}
+    .arrow-label{font-size:0.58rem;color:var(--muted);letter-spacing:.04em;text-align:center;margin:4px 0;writing-mode:vertical-rl;transform:rotate(180deg);max-height:80px;overflow:hidden}
+
+    /* horizontal arrows between columns */
+    .h-arrow{display:flex;align-items:center;justify-content:center;padding-top:60px}
+    .h-arrow-inner{display:flex;flex-direction:column;align-items:center;gap:4px;width:100%}
+    .h-arrow-line{height:2px;width:100%;background:linear-gradient(to right,transparent,var(--dim),transparent)}
+    .h-arrow-lbl{font-size:0.58rem;color:var(--muted);text-align:center;white-space:nowrap}
+    .h-arrow-tip{font-size:0.9rem;color:var(--muted)}
+
+    /* ── UPSTREAM TABLE ── */
+    .upstream-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px}
+    .us-card{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 22px}
+    .us-header{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+    .us-name{font-size:0.88rem;font-weight:700;color:var(--text)}
+    .us-badge{font-size:0.62rem;padding:2px 10px;border-radius:999px;white-space:nowrap;flex-shrink:0}
+    .us-feeds{display:flex;flex-direction:column;gap:6px}
+    .us-feed{display:flex;gap:10px;align-items:flex-start}
+    .us-feed-dot{width:5px;height:5px;border-radius:50%;margin-top:6px;flex-shrink:0}
+    .us-feed-text{font-size:0.76rem;color:var(--muted);line-height:1.5}
+    .us-feed-text strong{color:var(--text);font-weight:600}
+    .us-cadence{margin-top:10px;font-size:0.68rem;color:var(--muted);border-top:1px solid var(--border);padding-top:8px}
+    .us-cadence span{color:var(--text)}
+
+    /* ── FLOW STEPS ── */
+    .flow-steps{display:flex;flex-direction:column;gap:0}
+    .flow-step{display:grid;grid-template-columns:48px 1fr;gap:0;position:relative}
+    .flow-step:not(:last-child) .flow-num::after{content:'';position:absolute;left:23px;top:46px;bottom:-2px;width:2px;background:var(--border)}
+    .flow-num{position:relative;display:flex;align-items:flex-start;justify-content:center;padding-top:12px}
+    .flow-num-inner{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:0.78rem;font-weight:700;flex-shrink:0;z-index:1}
+    .flow-body{padding:10px 0 28px 16px}
+    .flow-title{font-size:0.9rem;font-weight:700;color:var(--text);margin-bottom:4px}
+    .flow-desc{font-size:0.78rem;color:var(--muted);line-height:1.6;max-width:680px}
+    .flow-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+    .chip{font-size:0.65rem;padding:3px 10px;border-radius:4px;border:1px solid}
+
+    /* ── COMPARISON TABLE ── */
+    .compare-table{width:100%;border-collapse:collapse}
+    .compare-table th{font-size:0.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);text-align:left;padding:10px 14px;border-bottom:1px solid var(--border)}
+    .compare-table td{font-size:0.8rem;padding:10px 14px;border-bottom:1px solid var(--border);vertical-align:top}
+    .compare-table tr:last-child td{border-bottom:none}
+    .compare-table tr:hover td{background:rgba(255,255,255,0.02)}
+    .td-field{color:var(--muted);font-family:monospace;font-size:0.75rem}
+    .td-demo{color:var(--yellow)}
+    .td-prod{color:var(--green)}
+    .td-cadence{color:var(--blue);font-size:0.72rem}
+
+    @media(max-width:900px){
+      nav,section,.hero{padding-left:20px;padding-right:20px}
+      .hero-title{font-size:1.6rem}
+      .diagram{min-width:900px}
+    }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div style="display:flex;align-items:center;gap:12px">
+    <div class="nav-brand">OPENDOOR</div>
+    <div style="color:var(--border)">|</div>
+    <div class="nav-title">Production Architecture · AWS</div>
+  </div>
+  <div class="nav-right">
+    <a class="nav-link" href="#diagram">Diagram</a>
+    <a class="nav-link" href="#upstream">Upstream Systems</a>
+    <a class="nav-link" href="#flow">Data Flow</a>
+    <a class="nav-link" href="#mapping">Field Mapping</a>
+    <a class="nav-link" href="portfolio.html">← Portfolio</a>
+    <div class="nav-pill">AWS · Snowflake · Claude API</div>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-inner">
+    <div class="hero-badge">&#9654; Production Architecture</div>
+    <div class="hero-title">From CSV to <span>Cloud-Scale</span> Intelligence</div>
+    <div class="hero-sub">How the agentic analytics system connects to Opendoor's real upstream data sources — MLS feeds, internal offer DB, AVM service, and Snowflake — in an AWS production environment.</div>
+    <div class="hero-kpis">
+      <div class="hero-kpi"><div class="hero-kpi-val">8</div><div class="hero-kpi-lbl">Upstream systems</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-val">3</div><div class="hero-kpi-lbl">AWS ingestion layers</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-val">Real-time</div><div class="hero-kpi-lbl">Offer event streaming</div></div>
+      <div class="hero-kpi"><div class="hero-kpi-val">Daily</div><div class="hero-kpi-lbl">Briefing cron trigger</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- DIAGRAM -->
+<section id="diagram">
+  <div class="inner">
+    <div class="sec-eyebrow">System Diagram</div>
+    <div class="sec-title">Full Production Architecture</div>
+    <div class="sec-sub">Five layers: upstream sources → AWS ingestion → Snowflake warehouse → agent tool layer → output delivery</div>
+
+    <div class="diagram-wrap">
+      <div style="min-width:1160px">
+
+        <!-- Column headers -->
+        <div style="display:grid;grid-template-columns:220px 48px 220px 48px 260px 48px 220px 48px 200px;margin-bottom:12px;min-width:1160px">
+          <div style="text-align:center;font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(41,181,232,0.7);padding:4px 8px;border-radius:4px;background:rgba(41,181,232,0.05)">Upstream Sources</div>
+          <div></div>
+          <div style="text-align:center;font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(255,153,0,0.7);padding:4px 8px;border-radius:4px;background:rgba(255,153,0,0.05)">AWS Ingestion</div>
+          <div></div>
+          <div style="text-align:center;font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(41,181,232,0.9);padding:4px 8px;border-radius:4px;background:rgba(41,181,232,0.08)">Snowflake Warehouse</div>
+          <div></div>
+          <div style="text-align:center;font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(192,132,252,0.7);padding:4px 8px;border-radius:4px;background:rgba(192,132,252,0.05)">Agent Tool Layer</div>
+          <div></div>
+          <div style="text-align:center;font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:rgba(74,222,128,0.7);padding:4px 8px;border-radius:4px;background:rgba(74,222,128,0.05)">Output</div>
+        </div>
+
+        <!-- Main diagram row -->
+        <div style="display:grid;grid-template-columns:220px 48px 220px 48px 260px 48px 220px 48px 200px;align-items:start;min-width:1160px;gap:0">
+
+          <!-- COL 1: Upstream -->
+          <div class="layer-upstream">
+            <div class="sys-box box-blue">
+              <div class="sys-name">&#x1F4CB; MLS / RETS Feed</div>
+              <div class="sys-desc">List price, sale price, DOM, inventory per market &amp; ZIP</div>
+              <div class="sys-tag tag-blue">CoreLogic · ATTOM · Redfin</div>
+            </div>
+            <div class="sys-box box-blue">
+              <div class="sys-name">&#x1F4B0; Internal Offer DB</div>
+              <div class="sys-desc">Every offer made, amount, accepted/rejected, seller response time</div>
+              <div class="sys-tag tag-blue">PostgreSQL / RDS</div>
+            </div>
+            <div class="sys-box box-blue">
+              <div class="sys-name">&#x1F3E0; AVM Service</div>
+              <div class="sys-desc">Opendoor's automated valuation model — market_estimated_value per property</div>
+              <div class="sys-tag tag-blue">Internal microservice</div>
+            </div>
+            <div class="sys-box box-blue">
+              <div class="sys-name">&#x1F465; CRM / Seller Funnel</div>
+              <div class="sys-desc">Lead count, lead-to-offer rate, offer-to-close rate per market &amp; segment</div>
+              <div class="sys-tag tag-blue">Salesforce / internal</div>
+            </div>
+            <div class="sys-box box-blue">
+              <div class="sys-name">&#x1F528; Acquisition Pipeline</div>
+              <div class="sys-desc">Homes under contract, purchase price, close date, days held</div>
+              <div class="sys-tag tag-blue">Internal ops DB</div>
+            </div>
+            <div class="sys-box box-blue">
+              <div class="sys-name">&#x1F6E0; Renovation Tracker</div>
+              <div class="sys-desc">Reno scope, cost actuals, completion date, contractor status</div>
+              <div class="sys-tag tag-blue">Internal ops DB</div>
+            </div>
+            <div class="sys-box box-blue">
+              <div class="sys-name">&#x1F4C8; Resale / Listing DB</div>
+              <div class="sys-desc">Final resale price, days to sell, actual realized margin per home</div>
+              <div class="sys-tag tag-blue">Internal transaction DB</div>
+            </div>
+            <div class="sys-box box-orange">
+              <div class="sys-name">&#x1F30E; Macro Data Feed</div>
+              <div class="sys-desc">30yr mortgage rate, affordability index, builder cancellation rate</div>
+              <div class="sys-tag tag-aws">Freddie Mac · MBA · Census</div>
+            </div>
+          </div>
+
+          <!-- ARROW 1 -->
+          <div style="display:flex;align-items:center;justify-content:center;padding-top:80px;flex-direction:column;gap:4px">
+            <div style="font-size:0.6rem;color:var(--muted);text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.04em;margin-bottom:4px">events / batch</div>
+            <div style="color:var(--muted);font-size:1.1rem">&#10230;</div>
+          </div>
+
+          <!-- COL 2: AWS Ingestion -->
+          <div class="layer-ingest">
+            <div class="sys-box box-aws">
+              <div class="sys-name">&#x26A1; Amazon Kinesis</div>
+              <div class="sys-desc">Real-time streaming for offer events, acceptance decisions, AVM updates</div>
+              <div class="sys-tag tag-aws">real-time</div>
+            </div>
+            <div class="sys-box box-aws">
+              <div class="sys-name">&#x1F4E6; Amazon S3</div>
+              <div class="sys-desc">Raw data lake — MLS batch drops, CRM exports, reno cost files</div>
+              <div class="sys-tag tag-aws">daily batch</div>
+            </div>
+            <div class="sys-box box-aws">
+              <div class="sys-name">&#x1F504; AWS Glue / dbt</div>
+              <div class="sys-desc">Transform raw events into clean, typed, de-duped tables in Snowflake</div>
+              <div class="sys-tag tag-aws">scheduled</div>
+            </div>
+            <div class="sys-box box-aws">
+              <div class="sys-name">&#x1F512; AWS Secrets Manager</div>
+              <div class="sys-desc">Stores ANTHROPIC_API_KEY, Snowflake credentials, MLS API tokens</div>
+              <div class="sys-tag tag-aws">security</div>
+            </div>
+            <div class="sys-box box-aws">
+              <div class="sys-name">&#x23F0; EventBridge Scheduler</div>
+              <div class="sys-desc">Triggers monitor-agent daily at 6am. Triggers weekly feedback recalibration.</div>
+              <div class="sys-tag tag-aws">cron</div>
+            </div>
+          </div>
+
+          <!-- ARROW 2 -->
+          <div style="display:flex;align-items:center;justify-content:center;padding-top:80px;flex-direction:column;gap:4px">
+            <div style="font-size:0.6rem;color:var(--muted);text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.04em;margin-bottom:4px">Snowflake connector</div>
+            <div style="color:var(--snow);font-size:1.1rem">&#10230;</div>
+          </div>
+
+          <!-- COL 3: Snowflake -->
+          <div class="layer-warehouse">
+            <div style="font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--snow);margin-bottom:4px;text-align:center">&#10052; Snowflake Data Warehouse</div>
+            <div class="sys-box box-snow">
+              <div class="sys-name">raw.mls_listings</div>
+              <div class="sys-desc">Full MLS history — list price, sale price, DOM, ZIP, segment, date</div>
+            </div>
+            <div class="sys-box box-snow">
+              <div class="sys-name">raw.offer_events</div>
+              <div class="sys-desc">Offer price, market_estimated_value, seller response, acceptance boolean</div>
+            </div>
+            <div class="sys-box box-snow">
+              <div class="sys-name">raw.funnel_activity</div>
+              <div class="sys-desc">lead_count, offer_count, accepted_offer_count, close_count per week/market</div>
+            </div>
+            <div class="sys-box box-snow">
+              <div class="sys-name">raw.inventory_status</div>
+              <div class="sys-desc">homes_owned, days_held, reno_status, estimated_hold_cost per deal</div>
+            </div>
+            <div class="sys-box box-snow">
+              <div class="sys-name">mart.market_metrics</div>
+              <div class="sys-desc">Clean weekly snapshot — replaces housing_market.csv exactly</div>
+            </div>
+            <div class="sys-box box-snow">
+              <div class="sys-name">mart.deal_pl</div>
+              <div class="sys-desc">Per-deal P&amp;L: ARV, acq cost, reno cost, hold cost, net margin</div>
+            </div>
+            <div class="sys-box box-snow">
+              <div class="sys-name">mart.feedback_log</div>
+              <div class="sys-desc">Decision Packets + action taken + observed outcome — replaces feedback_log.json</div>
+            </div>
+          </div>
+
+          <!-- ARROW 3 -->
+          <div style="display:flex;align-items:center;justify-content:center;padding-top:80px;flex-direction:column;gap:4px">
+            <div style="font-size:0.6rem;color:var(--muted);text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.04em;margin-bottom:4px">SQL → dict</div>
+            <div style="color:var(--purple);font-size:1.1rem">&#10230;</div>
+          </div>
+
+          <!-- COL 4: Agent Tool Layer -->
+          <div class="layer-agent">
+            <div style="font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--purple);margin-bottom:4px;text-align:center">&#x1F9E0; Agent Tool Layer · Lambda</div>
+            <div class="sys-box box-purple">
+              <div class="sys-name">data_loader.py</div>
+              <div class="sys-desc">get_market_summary() · get_market_trend() · detect_anomalies()</div>
+            </div>
+            <div class="sys-box box-purple">
+              <div class="sys-name">analyzer.py</div>
+              <div class="sys-desc">score_market_risk() · rank_all_markets()</div>
+            </div>
+            <div class="sys-box box-purple">
+              <div class="sys-name">deal_scout.py</div>
+              <div class="sys-desc">get_top_deals() · estimate_renovation()</div>
+            </div>
+            <div class="sys-box box-purple">
+              <div class="sys-name">capital_light.py</div>
+              <div class="sys-desc">detect_inventory_surges() · get_contribution_margin_forecast() · rank_top_100_deals()</div>
+            </div>
+            <div class="sys-box box-purple">
+              <div class="sys-name">pricing_engine.py</div>
+              <div class="sys-desc">analyze_pricing_accuracy() · analyze_funnel_drop() · generate_pricing_actions() · estimate_business_impact()</div>
+            </div>
+            <div class="sys-box box-purple">
+              <div class="sys-name">feedback_tracker.py</div>
+              <div class="sys-desc">log_recommendation() · record_outcome() · recalibrate_confidence()</div>
+            </div>
+            <div style="background:rgba(192,132,252,0.08);border:1px solid var(--purple-b);border-radius:6px;padding:8px 12px;margin-top:4px">
+              <div style="font-size:0.7rem;color:var(--purple)">&#9679; Claude Opus 4.6</div>
+              <div style="font-size:0.67rem;color:var(--muted);margin-top:2px">Orchestrates all tools · Native tool use · No wrappers</div>
+            </div>
+          </div>
+
+          <!-- ARROW 4 -->
+          <div style="display:flex;align-items:center;justify-content:center;padding-top:80px;flex-direction:column;gap:4px">
+            <div style="font-size:0.6rem;color:var(--muted);text-align:center;writing-mode:vertical-rl;transform:rotate(180deg);letter-spacing:.04em;margin-bottom:4px">briefing / alert</div>
+            <div style="color:var(--green);font-size:1.1rem">&#10230;</div>
+          </div>
+
+          <!-- COL 5: Output -->
+          <div class="layer-output">
+            <div style="font-size:0.65rem;letter-spacing:.08em;text-transform:uppercase;color:var(--green);margin-bottom:4px;text-align:center">&#x1F4E4; Output Delivery</div>
+            <div class="sys-box box-green">
+              <div class="sys-name">&#x1F4AC; Slack / Email</div>
+              <div class="sys-desc">Daily briefing + CRITICAL/HIGH alerts pushed to acquisitions channel</div>
+            </div>
+            <div class="sys-box box-green">
+              <div class="sys-name">&#x1F4BB; Web Dashboard</div>
+              <div class="sys-desc">Decision Packets · Risk rankings · Deal pipeline — live UI</div>
+            </div>
+            <div class="sys-box box-green">
+              <div class="sys-name">&#x1F4CB; Deal Pipeline JSON</div>
+              <div class="sys-desc">Top 100 deals pushed to acquisition tool for offer generation</div>
+            </div>
+            <div class="sys-box box-green">
+              <div class="sys-name">&#x1F4DD; Briefing Archive</div>
+              <div class="sys-desc">briefings/ → S3 bucket, version-controlled, Slack-ready markdown</div>
+            </div>
+            <div class="sys-box box-green">
+              <div class="sys-name">&#x1F504; Feedback Write-back</div>
+              <div class="sys-desc">Action taken + outcome → mart.feedback_log → recalibrate weights</div>
+            </div>
+          </div>
+
+        </div><!-- end grid -->
+      </div>
+    </div><!-- end diagram-wrap -->
+  </div>
+</section>
+
+<!-- UPSTREAM SYSTEMS -->
+<section id="upstream">
+  <div class="inner">
+    <div class="sec-eyebrow">Upstream Systems</div>
+    <div class="sec-title">All 8 Data Sources</div>
+    <div class="sec-sub">What each system provides, what Opendoor field it maps to, and how often it refreshes.</div>
+
+    <div class="upstream-grid">
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F4CB; MLS / RETS Feed</div>
+          <div class="us-badge" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b)">External</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--blue)"></div><div class="us-feed-text"><strong>list_price, sale_price</strong> — what sellers ask vs what homes close at</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--blue)"></div><div class="us-feed-text"><strong>days_on_market</strong> — time from list to sale or delisted</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--blue)"></div><div class="us-feed-text"><strong>inventory_count, homes_sold</strong> — supply/demand balance per market</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--blue)"></div><div class="us-feed-text"><strong>list_to_sale_ratio (LSR)</strong> — acceptance behavior proxy</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>Daily batch → S3 → Glue → mart.market_metrics</span></div>
+      </div>
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F4B0; Internal Offer DB</div>
+          <div class="us-badge" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">Internal</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>opendoor_offer_price</strong> — exact dollar amount offered per property</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>seller_accepted_offer</strong> — boolean outcome per offer</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>days_to_accept</strong> — seller response time (pricing signal)</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>accepted_offer_count</strong> — weekly acceptance volume per market/segment</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>Real-time events → Kinesis → raw.offer_events</span></div>
+      </div>
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F3E0; AVM Service</div>
+          <div class="us-badge" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">Internal</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>market_estimated_value</strong> — Opendoor's AVM output per property</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>price_per_sqft</strong> — used for ARV and deal scoring</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>pricing accuracy</strong> — offer vs AVM delta triggers misalignment detection</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>Per-property API call at offer time → raw.offer_events</span></div>
+      </div>
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F465; CRM / Seller Funnel</div>
+          <div class="us-badge" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">Internal</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>lead_count</strong> — seller inquiries per week per market</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>lead_to_offer_rate</strong> — funnel efficiency at top of funnel</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>offer_to_close_rate</strong> — downstream conversion health</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>Daily batch → S3 → raw.funnel_activity</span></div>
+      </div>
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F528; Acquisition Pipeline</div>
+          <div class="us-badge" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">Internal</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>acquisition_price</strong> — what Opendoor paid per home</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>days_held</strong> — time owned, drives hold cost accrual</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>inventory_count</strong> — homes owned per market right now</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>inventory_days_on_market</strong> — Z-score surge detection input</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>Daily batch → S3 → raw.inventory_status</span></div>
+      </div>
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F6E0; Renovation Tracker</div>
+          <div class="us-badge" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">Internal</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>reno_cost_actual</strong> — realized cost per property (vs estimate)</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>reno_condition</strong> — cosmetic / moderate / full_gut tier</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>reno_completion_date</strong> — feeds hold cost calculation</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>Daily batch → S3 → mart.deal_pl</span></div>
+      </div>
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F4C8; Resale / Transaction DB</div>
+          <div class="us-badge" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">Internal</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>resale_price</strong> — actual sale price when Opendoor exits the home</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>resale_margin_actual</strong> — closes the feedback loop vs predicted</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--purple)"></div><div class="us-feed-text"><strong>days_to_sell</strong> — post-reno sale velocity, key capital-light metric</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>On transaction close → Kinesis → mart.feedback_log</span></div>
+      </div>
+
+      <div class="us-card">
+        <div class="us-header">
+          <div class="us-name">&#x1F30E; Macro Data Feed</div>
+          <div class="us-badge" style="background:var(--orange-bg);color:var(--orange);border:1px solid var(--orange-b)">External</div>
+        </div>
+        <div class="us-feeds">
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--orange)"></div><div class="us-feed-text"><strong>30yr mortgage rate</strong> — rate lock-out seller signal (Ken Zener framework)</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--orange)"></div><div class="us-feed-text"><strong>builder cancellation rate</strong> — new construction competition (Ivy Zelman framework)</div></div>
+          <div class="us-feed"><div class="us-feed-dot" style="background:var(--orange)"></div><div class="us-feed-text"><strong>affordability index</strong> — demand ceiling context per market</div></div>
+        </div>
+        <div class="us-cadence">Refresh: <span>Weekly batch → Freddie Mac / MBA / Census APIs → S3</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- DATA FLOW -->
+<section id="flow">
+  <div class="inner">
+    <div class="sec-eyebrow">Production Data Flow</div>
+    <div class="sec-title">How Data Moves End-to-End</div>
+    <div class="sec-sub">From upstream event to Decision Packet delivered to the acquisitions team.</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:48px;margin-top:8px">
+
+      <div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--aws);letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid var(--border)">&#9654; Real-Time Path — Offer Events</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--blue-bg);color:var(--blue);border:1px solid var(--blue-b)">1</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Seller submits to Opendoor</div>
+              <div class="flow-desc">AVM service evaluates property → returns market_estimated_value. Pricing microservice sets offer band. Offer event fires.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--blue-bg);border-color:var(--blue-b);color:var(--blue)">AVM Service</span><span class="chip" style="background:var(--blue-bg);border-color:var(--blue-b);color:var(--blue)">Pricing Microservice</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--aws-bg);color:var(--aws);border:1px solid var(--aws-b)">2</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Kinesis captures the event</div>
+              <div class="flow-desc">offer_price, market_estimated_value, seller_accepted, days_to_accept streamed in real-time → raw.offer_events in Snowflake.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--aws-bg);border-color:var(--aws-b);color:var(--aws)">Amazon Kinesis</span><span class="chip" style="background:var(--snow-bg);border-color:var(--snow-b);color:var(--snow)">raw.offer_events</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--snow-bg);color:var(--snow);border:1px solid var(--snow-b)">3</div></div>
+            <div class="flow-body">
+              <div class="flow-title">dbt materializes mart views</div>
+              <div class="flow-desc">Aggregates to weekly market/segment snapshots. Computes LSR, acceptance rate WoW delta, funnel conversion rates. mart.market_metrics refreshed.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--aws-bg);border-color:var(--aws-b);color:var(--aws)">dbt / Glue</span><span class="chip" style="background:var(--snow-bg);border-color:var(--snow-b);color:var(--snow)">mart.market_metrics</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">4</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Tool layer queries Snowflake</div>
+              <div class="flow-desc">analyze_pricing_accuracy() runs a SQL query against mart.market_metrics instead of reading CSV. Returns same structured dict. Agent behavior unchanged.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--purple-bg);border-color:var(--purple-b);color:var(--purple)">pricing_engine.py</span><span class="chip" style="background:var(--purple-bg);border-color:var(--purple-b);color:var(--purple)">Claude Opus 4.6</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)">5</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Decision Packet delivered</div>
+              <div class="flow-desc">If severity HIGH/CRITICAL → Slack alert fires to #acquisitions within minutes of issue detection. Pricing team sees action in under 1 hour.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--green-bg);border-color:var(--green-b);color:var(--green)">Slack Webhook</span><span class="chip" style="background:var(--green-bg);border-color:var(--green-b);color:var(--green)">mart.feedback_log</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-size:0.75rem;font-weight:700;color:var(--purple);letter-spacing:.06em;text-transform:uppercase;margin-bottom:20px;padding-bottom:8px;border-bottom:1px solid var(--border)">&#9654; Scheduled Path — Daily Briefing</div>
+        <div class="flow-steps">
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--aws-bg);color:var(--aws);border:1px solid var(--aws-b)">1</div></div>
+            <div class="flow-body">
+              <div class="flow-title">EventBridge fires at 6:00 AM</div>
+              <div class="flow-desc">Triggers monitor-agent Lambda (or ECS task). No human input needed — proactive by design.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--aws-bg);border-color:var(--aws-b);color:var(--aws)">EventBridge Scheduler</span><span class="chip" style="background:var(--aws-bg);border-color:var(--aws-b);color:var(--aws)">Lambda / ECS Fargate</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--snow-bg);color:var(--snow);border:1px solid var(--snow-b)">2</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Agent pulls fresh Snowflake snapshots</div>
+              <div class="flow-desc">All mart views reflect last 24 hours of MLS + offer + funnel + inventory data. Tools query via Snowflake Python connector — same interface as CSV.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--snow-bg);border-color:var(--snow-b);color:var(--snow)">Snowflake connector</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">3</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Proactive loop runs all tools</div>
+              <div class="flow-desc">Same 4-step logic: analyze_pricing_accuracy → detect_inventory_surges → CM forecast → rank_all_markets. Claude chains tools autonomously.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--purple-bg);border-color:var(--purple-b);color:var(--purple)">monitor.py</span><span class="chip" style="background:var(--purple-bg);border-color:var(--purple-b);color:var(--purple)">Native tool use</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--purple-bg);color:var(--purple);border:1px solid var(--purple-b)">4</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Feedback loop recalibrates weekly</div>
+              <div class="flow-desc">Outcomes from mart.feedback_log feed recalibrate_confidence(). Weights updated. Next day's briefing uses improved confidence scores.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--purple-bg);border-color:var(--purple-b);color:var(--purple)">feedback_tracker.py</span></div>
+            </div>
+          </div>
+          <div class="flow-step">
+            <div class="flow-num"><div class="flow-num-inner" style="background:var(--green-bg);color:var(--green);border:1px solid var(--green-b)">5</div></div>
+            <div class="flow-body">
+              <div class="flow-title">Briefing saved + delivered</div>
+              <div class="flow-desc">Markdown saved to S3 (briefings/ bucket). Slack message posted to #acquisitions-daily. Web dashboard updated. Deal pipeline JSON pushed to acquisition tool.</div>
+              <div class="flow-chips"><span class="chip" style="background:var(--green-bg);border-color:var(--green-b);color:var(--green)">S3</span><span class="chip" style="background:var(--green-bg);border-color:var(--green-b);color:var(--green)">Slack</span><span class="chip" style="background:var(--green-bg);border-color:var(--green-b);color:var(--green)">Web UI</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- FIELD MAPPING -->
+<section id="mapping">
+  <div class="inner">
+    <div class="sec-eyebrow">Field Mapping</div>
+    <div class="sec-title">Demo → Production</div>
+    <div class="sec-sub">Every synthetic field maps to a real Snowflake table. The tool interfaces don't change — only the data source behind them.</div>
+
+    <table class="compare-table" style="margin-top:8px">
+      <thead>
+        <tr>
+          <th>Synthetic field</th>
+          <th>Demo source</th>
+          <th>Production source</th>
+          <th>Snowflake table</th>
+          <th>Refresh</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="td-field">median_sale_price<br>days_on_market<br>homes_sold</td>
+          <td class="td-demo">housing_market.csv</td>
+          <td class="td-prod">MLS / RETS feed</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">mart.market_metrics</td>
+          <td class="td-cadence">Daily</td>
+        </tr>
+        <tr>
+          <td class="td-field">list_to_sale_ratio<br>price_per_sqft</td>
+          <td class="td-demo">housing_market.csv</td>
+          <td class="td-prod">MLS feed + computed</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">mart.market_metrics</td>
+          <td class="td-cadence">Daily</td>
+        </tr>
+        <tr>
+          <td class="td-field">opendoor_offer_price<br>seller_accepted_offer<br>days_to_accept</td>
+          <td class="td-demo">synthetic_data.py</td>
+          <td class="td-prod">Internal Offer DB</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">raw.offer_events</td>
+          <td class="td-cadence">Real-time</td>
+        </tr>
+        <tr>
+          <td class="td-field">market_estimated_value</td>
+          <td class="td-demo">synthetic_data.py</td>
+          <td class="td-prod">AVM microservice</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">raw.offer_events</td>
+          <td class="td-cadence">Per offer</td>
+        </tr>
+        <tr>
+          <td class="td-field">lead_count<br>offer_count<br>accepted_offer_count<br>close_count</td>
+          <td class="td-demo">synthetic_data.py</td>
+          <td class="td-prod">CRM / Salesforce</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">raw.funnel_activity</td>
+          <td class="td-cadence">Daily</td>
+        </tr>
+        <tr>
+          <td class="td-field">inventory_days_on_market<br>inventory_count</td>
+          <td class="td-demo">synthetic_data.py</td>
+          <td class="td-prod">Acquisition pipeline</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">raw.inventory_status</td>
+          <td class="td-cadence">Daily</td>
+        </tr>
+        <tr>
+          <td class="td-field">acquisition_margin_estimate<br>reno_cost, hold_cost</td>
+          <td class="td-demo">deal_scout.py tiers</td>
+          <td class="td-prod">Acq pipeline + Reno tracker</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">mart.deal_pl</td>
+          <td class="td-cadence">Daily</td>
+        </tr>
+        <tr>
+          <td class="td-field">resale_margin_actual<br>days_to_sell</td>
+          <td class="td-demo">synthetic_data.py</td>
+          <td class="td-prod">Resale / Transaction DB</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">mart.deal_pl</td>
+          <td class="td-cadence">On close</td>
+        </tr>
+        <tr>
+          <td class="td-field">prediction_accuracy<br>confidence_weights</td>
+          <td class="td-demo">briefings/feedback_log.json</td>
+          <td class="td-prod">Feedback write-back</td>
+          <td style="color:var(--snow);font-size:0.75rem;font-family:monospace">mart.feedback_log</td>
+          <td class="td-cadence">Weekly</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="margin-top:32px;background:var(--card);border:1px solid var(--border);border-radius:8px;padding:20px 24px">
+      <div style="font-size:0.75rem;font-weight:700;color:var(--text);margin-bottom:8px">Key production principle</div>
+      <div style="font-size:0.82rem;color:var(--muted);line-height:1.7">
+        Every tool returns a <strong style="color:var(--text)">structured dict</strong>. The data source behind the tool is an implementation detail — switching from CSV to a Snowflake query is a one-line change per tool. Claude's reasoning layer, the agentic loop, the Decision Packet format, and the feedback mechanism are all <strong style="color:var(--green)">unchanged in production</strong>.
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div style="padding:32px 48px;border-top:1px solid var(--border);background:var(--surface);display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px">
+  <div style="font-size:0.75rem;color:var(--muted)">Opendoor · Agentic Analytics Engineer · Production Architecture</div>
+  <div style="display:flex;gap:16px">
+    <a href="portfolio.html" style="font-size:0.75rem;color:var(--blue);text-decoration:none">← Portfolio</a>
+    <a href="decision-engine.html" style="font-size:0.75rem;color:var(--blue);text-decoration:none">Decision Engine →</a>
+  </div>
+</div>
+
+</body>
+</html>

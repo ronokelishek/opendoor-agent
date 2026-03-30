@@ -1,0 +1,868 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agentic Analytics Engineer — Opendoor Portfolio</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#090c14;--surface:#111520;--card:#161c2b;--border:#1f2a3e;
+      --text:#e2e8f0;--muted:#64748b;--dim:#1e2d42;
+      --blue:#38bdf8;--blue-bg:#071e33;--blue-border:#0e3a5e;
+      --green:#4ade80;--green-bg:#071f12;--green-border:#0f3d20;
+      --purple:#c084fc;--purple-bg:#140b22;--purple-border:#2d1650;
+      --orange:#fb923c;--orange-bg:#1f1005;
+      --red:#f87171;--red-bg:#1f0808;
+      --yellow:#fbbf24;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:var(--bg);color:var(--text);line-height:1.6}
+
+    /* NAV */
+    nav{display:flex;justify-content:space-between;align-items:center;padding:14px 48px;border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:100}
+    .nav-left{display:flex;align-items:center;gap:16px}
+    .nav-logo{font-size:0.85rem;font-weight:700;color:var(--blue);letter-spacing:.06em}
+    .nav-sep{color:var(--border);font-size:1.2rem}
+    .nav-title{font-size:0.82rem;color:var(--muted)}
+    .nav-right{display:flex;gap:20px;align-items:center}
+    .nav-link{font-size:0.78rem;color:var(--muted);text-decoration:none}
+    .nav-link:hover{color:var(--text)}
+    .nav-pill{font-size:0.7rem;padding:4px 12px;border-radius:999px;background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+
+    /* BANNER */
+    .banner{background:linear-gradient(135deg,#071e33 0%,#0d2a1a 100%);border-bottom:1px solid var(--blue-border);padding:14px 48px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    .banner-left{display:flex;align-items:center;gap:14px}
+    .banner-pulse{width:10px;height:10px;border-radius:50%;background:var(--green);box-shadow:0 0 8px var(--green);flex-shrink:0}
+    .banner-text{font-size:0.82rem;color:#94a3b8}
+    .banner-text strong{color:var(--green)}
+    .banner-right{font-size:0.75rem;color:var(--muted)}
+
+    /* CM HIGHLIGHT */
+    .cm-highlight{background:var(--card);border:1px solid var(--green-border);border-radius:14px;padding:32px;margin-bottom:32px}
+    .cm-highlight-top{display:flex;align-items:flex-start;justify-content:space-between;gap:24px;flex-wrap:wrap;margin-bottom:24px}
+    .cm-quote{font-size:1.25rem;font-weight:700;color:#f8fafc;line-height:1.4;max-width:560px}
+    .cm-quote em{font-style:normal;color:var(--green)}
+    .cm-caption{font-size:0.75rem;color:var(--muted);margin-top:6px}
+    .cm-stats{display:flex;gap:28px;flex-wrap:wrap}
+    .cm-stat{text-align:right}
+    .cm-stat-num{font-size:1.6rem;font-weight:800}
+    .cm-stat-label{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+    .briefing-output{background:#07090f;border:1px solid var(--border);border-radius:10px;padding:20px 24px;font-family:"Courier New",monospace;font-size:0.77rem;line-height:1.9;color:var(--muted)}
+    .briefing-output .bo-title{color:#f1f5f9;font-weight:bold;font-size:0.85rem}
+    .briefing-output .bo-alert{color:var(--red)}
+    .briefing-output .bo-action{color:var(--orange);font-weight:bold}
+    .briefing-output .bo-cm{color:var(--green)}
+    .briefing-output .bo-dim{color:#1e3a2a}
+    .briefing-output table{width:100%;border-collapse:collapse;margin:8px 0}
+    .briefing-output th{color:var(--muted);font-size:0.68rem;text-transform:uppercase;padding:4px 10px;text-align:left;border-bottom:1px solid var(--border)}
+    .briefing-output td{padding:5px 10px;color:#94a3b8;font-size:0.76rem}
+    .briefing-output td.g{color:var(--green);font-weight:600}
+    .briefing-output td.r{color:var(--red)}
+    .briefing-output td.y{color:var(--yellow)}
+
+    /* SEMANTIC LAYER */
+    .semantic-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px;margin-bottom:32px}
+    .sem-card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px}
+    .sem-nl{font-size:0.78rem;font-weight:600;color:var(--blue);margin-bottom:8px;font-family:"Courier New",monospace}
+    .sem-arrow{color:var(--dim);margin:0 6px}
+    .sem-filter{font-size:0.72rem;color:#94a3b8;font-family:"Courier New",monospace;line-height:1.7}
+
+    /* INVENTORY SURGE */
+    .surge-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px;margin-bottom:28px}
+    .surge-card{background:var(--card);border-radius:10px;padding:18px;border:1px solid var(--border)}
+    .surge-card.surging{border-color:#3d1010}
+    .surge-market{font-size:0.95rem;font-weight:700;color:#f1f5f9;margin-bottom:8px}
+    .surge-row{display:flex;justify-content:space-between;font-size:0.78rem;margin-bottom:4px}
+    .surge-label{color:var(--muted)}
+    .surge-val{font-family:"Courier New",monospace;font-weight:600}
+    .surge-badge{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.65rem;font-weight:700;text-transform:uppercase;margin-top:6px}
+    .surge-badge.surging{background:var(--red-bg);color:var(--red);border:1px solid #3d1010}
+    .surge-badge.normal{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+
+    /* HERO */
+    .hero{padding:90px 48px 70px;max-width:1000px;margin:0 auto;text-align:center}
+    .hero-eyebrow{font-size:0.72rem;color:var(--blue);text-transform:uppercase;letter-spacing:.15em;margin-bottom:18px}
+    .hero h1{font-size:3rem;font-weight:800;color:#f8fafc;line-height:1.15;margin-bottom:20px}
+    .hero h1 em{font-style:normal;color:var(--blue)}
+    .hero-sub{font-size:1rem;color:#94a3b8;max-width:600px;margin:0 auto 32px}
+    .hero-stats{display:flex;gap:32px;justify-content:center;flex-wrap:wrap;margin-top:36px}
+    .stat{text-align:center}
+    .stat-num{font-size:2rem;font-weight:800;color:var(--blue)}
+    .stat-label{font-size:0.72rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-top:2px}
+
+    /* SECTIONS */
+    section{padding:72px 48px;border-top:1px solid var(--border)}
+    .inner{max-width:1100px;margin:0 auto}
+    .sec-eyebrow{font-size:0.68rem;color:var(--blue);text-transform:uppercase;letter-spacing:.14em;margin-bottom:8px}
+    .sec-title{font-size:1.6rem;font-weight:700;color:#f1f5f9;margin-bottom:8px}
+    .sec-sub{font-size:0.9rem;color:var(--muted);margin-bottom:40px;max-width:580px}
+
+    /* WHAT I BUILT */
+    .built-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px}
+    .built-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:24px}
+    .built-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:1rem;margin-bottom:14px}
+    .built-name{font-size:0.95rem;font-weight:600;color:#f1f5f9;margin-bottom:6px}
+    .built-desc{font-size:0.8rem;color:#94a3b8;line-height:1.6;margin-bottom:12px}
+    .built-file{font-size:0.72rem;font-family:"Courier New",monospace;color:var(--blue);background:var(--blue-bg);padding:3px 8px;border-radius:4px;display:inline-block}
+
+    /* PIPELINE DIAGRAM */
+    .pipeline{display:flex;align-items:stretch;gap:0;overflow-x:auto;padding:4px 0 12px;margin-bottom:32px}
+    .pipe-node{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px;min-width:155px;flex-shrink:0}
+    .pipe-label{font-size:0.62rem;color:var(--muted);text-transform:uppercase;letter-spacing:.1em;margin-bottom:4px}
+    .pipe-name{font-size:0.88rem;font-weight:600;color:var(--text)}
+    .pipe-sub{font-size:0.7rem;color:var(--dim);margin-top:4px}
+    .pipe-arrow{display:flex;align-items:center;padding:0 10px;color:var(--dim);font-size:1.4rem;flex-shrink:0}
+
+    /* MARKET RISK */
+    .risk-table{width:100%;border-collapse:collapse;margin-bottom:28px}
+    .risk-table th{font-size:0.7rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:8px 14px;text-align:left;border-bottom:1px solid var(--border)}
+    .risk-table td{padding:12px 14px;font-size:0.84rem;border-bottom:1px solid var(--border)}
+    .risk-table tr:last-child td{border-bottom:none}
+    .badge{display:inline-block;padding:2px 10px;border-radius:999px;font-size:0.68rem;font-weight:700}
+    .badge.high{background:var(--red-bg);color:var(--red);border:1px solid #3d1010}
+    .badge.med{background:var(--orange-bg);color:var(--orange);border:1px solid #3d2005}
+    .badge.low{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+    .market-name{font-weight:600;color:#f1f5f9}
+    .score-bar-wrap{display:flex;align-items:center;gap:10px}
+    .score-bar{height:6px;border-radius:3px;background:var(--border);flex:1;max-width:80px;overflow:hidden}
+    .score-fill{height:100%;border-radius:3px}
+    .score-num{font-size:0.8rem;font-weight:700;min-width:24px}
+    td.neg{color:var(--red)}
+    td.warn{color:var(--yellow)}
+    .reason-list{display:flex;flex-direction:column;gap:3px}
+    .reason{font-size:0.72rem;color:var(--muted)}
+
+    /* DEAL SCOUT */
+    .deal-filters{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:24px}
+    .filter-chip{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:7px 14px;font-size:0.75rem;color:var(--muted);cursor:default}
+    .filter-chip.active{background:var(--blue-bg);border-color:var(--blue-border);color:var(--blue)}
+    .deal-table{width:100%;border-collapse:collapse}
+    .deal-table th{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;padding:8px 12px;text-align:left;border-bottom:1px solid var(--border)}
+    .deal-table td{padding:11px 12px;font-size:0.82rem;border-bottom:1px solid var(--border);vertical-align:top}
+    .deal-table tr:last-child td{border-bottom:none}
+    .deal-id{font-family:"Courier New",monospace;font-size:0.72rem;color:var(--muted)}
+    .deal-addr{font-weight:600;color:#f1f5f9;font-size:0.84rem}
+    .deal-meta{font-size:0.72rem;color:var(--muted);margin-top:2px}
+    .cond-chip{display:inline-block;padding:2px 8px;border-radius:4px;font-size:0.68rem;font-weight:600;text-transform:uppercase}
+    .cond-chip.cosmetic{background:#071a2e;color:#60a5fa;border:1px solid #0e3060}
+    .cond-chip.moderate{background:#1a0f07;color:#fb923c;border:1px solid #3d2005}
+    .cond-chip.full_gut{background:#140b22;color:#c084fc;border:1px solid #2d1650}
+    .money{font-family:"Courier New",monospace;font-size:0.82rem}
+    .money.profit{color:var(--green);font-weight:700}
+    .money.cost{color:#94a3b8}
+    .money.arv{color:var(--blue)}
+    .roi-pill{display:inline-block;padding:3px 10px;border-radius:6px;font-size:0.78rem;font-weight:700;font-family:"Courier New",monospace}
+    .roi-pill.high{background:var(--green-bg);color:var(--green);border:1px solid var(--green-border)}
+    .roi-pill.med{background:var(--orange-bg);color:var(--orange);border:1px solid #3d2005}
+    .roi-pill.low{background:#111;color:var(--muted);border:1px solid var(--border)}
+    .dom-chip{font-size:0.72rem;color:var(--muted)}
+    .dom-chip.long{color:var(--yellow)}
+    .pl-breakdown{font-size:0.72rem;color:var(--muted);line-height:1.8;margin-top:4px}
+    .pl-breakdown span{color:#94a3b8}
+
+    /* RENO TIERS */
+    .tier-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px;margin-bottom:32px}
+    .tier-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px}
+    .tier-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+    .tier-name{font-size:1rem;font-weight:700;color:#f1f5f9}
+    .tier-scope{font-size:0.75rem;color:var(--muted);margin-top:3px}
+    .tier-stats{display:flex;flex-direction:column;gap:8px}
+    .tier-row{display:flex;justify-content:space-between;align-items:center;font-size:0.8rem}
+    .tier-row-label{color:var(--muted)}
+    .tier-row-val{font-weight:600;font-family:"Courier New",monospace}
+
+    /* NL INTERFACE */
+    .chat-window{background:#07090f;border:1px solid var(--border);border-radius:12px;overflow:hidden;max-width:760px}
+    .chat-bar{background:var(--surface);border-bottom:1px solid var(--border);padding:10px 16px;display:flex;align-items:center;gap:8px}
+    .chat-dot{width:9px;height:9px;border-radius:50%}
+    .chat-bar-title{font-size:0.73rem;color:var(--muted);margin-left:4px}
+    .chat-bar-badge{margin-left:auto;font-size:0.65rem;background:var(--blue-bg);color:var(--blue);padding:2px 10px;border-radius:999px;border:1px solid var(--blue-border)}
+    .chat-body{padding:24px;display:flex;flex-direction:column;gap:16px}
+    .msg{display:flex;flex-direction:column;gap:4px}
+    .msg-role{font-size:0.65rem;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+    .msg-bubble{padding:12px 16px;border-radius:10px;font-size:0.82rem;line-height:1.7}
+    .msg.user .msg-bubble{background:var(--blue-bg);border:1px solid var(--blue-border);color:#93c5fd;align-self:flex-start}
+    .msg.tool .msg-bubble{background:#0a0f08;border:1px solid #1a2e1a;color:#4ade80;font-family:"Courier New",monospace;font-size:0.73rem;align-self:flex-start}
+    .msg.agent .msg-bubble{background:var(--card);border:1px solid var(--border);color:#e2e8f0;align-self:flex-start}
+    .msg.agent .msg-bubble strong{color:#f8fafc}
+    .msg.agent .msg-bubble .action{color:var(--orange);font-weight:600}
+
+    /* SKILL MAP */
+    .skill-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:16px}
+    .skill-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:22px}
+    .skill-jd{font-size:0.68rem;color:var(--muted);text-transform:uppercase;letter-spacing:.08em;margin-bottom:6px}
+    .skill-req{font-size:0.88rem;font-weight:600;color:#f1f5f9;margin-bottom:12px}
+    .skill-evidence{font-size:0.8rem;color:#94a3b8;line-height:1.6;border-left:2px solid var(--border);padding-left:12px}
+    .skill-evidence code{color:var(--blue);background:var(--blue-bg);padding:1px 6px;border-radius:3px;font-size:0.72rem}
+    .check{color:var(--green);margin-right:6px}
+
+    /* FOOTER */
+    footer{text-align:center;padding:48px 24px;border-top:1px solid var(--border);font-size:0.78rem;color:var(--muted)}
+    footer strong{color:var(--text)}
+
+    @media(max-width:700px){
+      nav{padding:12px 20px}
+      section{padding:48px 20px}
+      .hero{padding:60px 20px 48px}
+      .hero h1{font-size:2rem}
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-left">
+    <div class="nav-logo">OPENDOOR</div>
+    <div class="nav-sep">|</div>
+    <div class="nav-title">Agentic Analytics Engineer — Application Portfolio</div>
+  </div>
+  <div class="nav-right">
+    <a class="nav-link" href="#built">What I Built</a>
+    <a class="nav-link" href="#risk">Market Risk</a>
+    <a class="nav-link" href="#deals">Deal Scout</a>
+    <a class="nav-link" href="#agent">Agent Q&A</a>
+    <a class="nav-link" href="#fit">Role Fit</a>
+    <a class="nav-link" href="decision-engine.html" style="color:var(--blue);font-weight:600">Decision Engine →</a>
+    <div class="nav-pill">Live Agent · Claude API</div>
+  </div>
+</nav>
+
+<!-- BANNER -->
+<div class="banner">
+  <div class="banner-left">
+    <div class="banner-pulse"></div>
+    <div class="banner-text">
+      <strong>What a human analyst takes 4 hours to find, this agent finds in 4 seconds.</strong>
+      &nbsp;·&nbsp; Proactive scan triggered automatically at 06:00 &nbsp;·&nbsp; March 29, 2026
+    </div>
+  </div>
+  <div class="banner-right">Inventory surge detected in 4 markets &rarr; CM-at-risk flagged &rarr; Capital-light deals ranked</div>
+</div>
+
+<!-- CAPITAL-LIGHT SECTION (above the fold) -->
+<section id="capital-light" style="padding-top:56px">
+  <div class="inner">
+    <div class="sec-eyebrow">Opendoor 2026 Strategy · Capital-Light + AI-First</div>
+    <div class="sec-title">The agent monitors Contribution Margin and Inventory Turn — not just deal count.</div>
+    <div class="sec-sub">CEO Kaz Nejatian is measured on CM per deal and days in possession. This agent is built around those two numbers.</div>
+
+    <!-- CM Highlight Output -->
+    <div class="cm-highlight">
+      <div class="cm-highlight-top">
+        <div>
+          <div class="cm-quote">Inventory surging in all 4 markets.<br/>Agent auto-triggered deal ranking.<br/><em>$4.5M contribution margin identified in 4 seconds.</em></div>
+          <div class="cm-caption">Proactive output — no analyst prompt required · March 29, 2026</div>
+        </div>
+        <div class="cm-stats">
+          <div class="cm-stat"><div class="cm-stat-num" style="color:var(--green)">$4.5M</div><div class="cm-stat-label">Total CM Available</div></div>
+          <div class="cm-stat"><div class="cm-stat-num" style="color:var(--blue)">83 days</div><div class="cm-stat-label">Avg Hold (vs 90 target)</div></div>
+          <div class="cm-stat"><div class="cm-stat-num" style="color:var(--orange)">8.1%</div><div class="cm-stat-label">Avg CM %</div></div>
+        </div>
+      </div>
+
+      <div class="briefing-output">
+        <span class="bo-title">PROACTIVE BRIEFING · Capital-Light Scan · March 29, 2026</span><br/>
+        <span class="bo-dim">── triggered automatically by detect_inventory_surges() ────────────────────</span><br/><br/>
+
+        <span class="bo-alert">ALERT: Inventory surge confirmed in all 4 markets (z-scores: ATL +1.76, CLT +1.73, PHX +1.63, DAL +1.63)</span><br/>
+        Agent auto-called rank_top_100_deals(semantic_filter='capital-light opportunities')<br/><br/>
+
+        <span class="bo-title">Contribution Margin At Risk (per deal, per surge market)</span><br/>
+        <table>
+          <tr><th>Market</th><th>Inv Z-Score</th><th>Extra Hold Days</th><th>CM At Risk / Deal</th><th>Trend</th></tr>
+          <tr><td>Atlanta</td><td class="r">+1.76</td><td class="r">+17 days</td><td class="r">-$1,352</td><td class="r">SURGING</td></tr>
+          <tr><td>Charlotte</td><td class="r">+1.73</td><td class="r">+17 days</td><td class="r">-$1,488</td><td class="r">SURGING</td></tr>
+          <tr><td>Phoenix</td><td class="r">+1.63</td><td class="r">+16 days</td><td class="r">-$1,552</td><td class="r">SURGING</td></tr>
+          <tr><td>Dallas</td><td class="r">+1.63</td><td class="r">+16 days</td><td class="r">-$1,632</td><td class="r">SURGING</td></tr>
+        </table><br/>
+
+        <span class="bo-title">Top 5 Capital-Light Deals (auto-surfaced, composite score)</span><br/>
+        <table>
+          <tr><th>Deal ID</th><th>Market</th><th>CM</th><th>CM %</th><th>Capital Req.</th><th>Hold Days</th><th>CM / Day</th><th>Score</th></tr>
+          <tr><td>OD-082</td><td>Phoenix</td><td class="g">$120,341</td><td class="g">13.5%</td><td>$333,530</td><td>127d</td><td class="g">$947</td><td class="g">36.1</td></tr>
+          <tr><td>OD-092</td><td>Phoenix</td><td class="g">$94,558</td><td class="g">10.8%</td><td>$313,310</td><td>106d</td><td class="g">$892</td><td class="g">30.2</td></tr>
+          <tr><td>OD-057</td><td>Dallas</td><td class="g">$54,056</td><td class="g">9.2%</td><td>$266,408</td><td>84d</td><td class="g">$644</td><td class="g">20.9</td></tr>
+          <tr><td>OD-023</td><td>Atlanta</td><td class="g">$59,813</td><td class="g">9.8%</td><td>$340,087</td><td>116d</td><td class="g">$516</td><td class="g">17.6</td></tr>
+          <tr><td>OD-077</td><td>Phoenix</td><td class="g">$40,819</td><td class="g">8.3%</td><td>$233,030</td><td>91d</td><td class="g">$449</td><td class="g">17.5</td></tr>
+        </table><br/>
+
+        <span class="bo-action">RECOMMENDED ACTIONS:</span><br/>
+        1. Approve OD-082, OD-092, OD-057 immediately — all clear CM floor, capital-light, hold under 130 days.<br/>
+        2. Charlotte and Atlanta: pause all new full-gut deals — inventory surge + high hold days = CM floor breach risk.<br/>
+        3. Renegotiate any deal in contract across all 4 markets — seller leverage has collapsed (DOM +30-47% above avg).<br/>
+        4. Flag 50 deals in pipeline currently below $30k CM floor for repricing or disposition.
+      </div>
+    </div>
+
+    <!-- Inventory Surge Cards -->
+    <div class="sec-eyebrow" style="margin-top:40px;margin-bottom:8px">Step 1 — detect_inventory_surges() Output</div>
+    <div class="surge-grid">
+      <div class="surge-card surging">
+        <div class="surge-market">Atlanta</div>
+        <div class="surge-row"><span class="surge-label">Inventory Z-Score</span><span class="surge-val" style="color:var(--red)">+1.76</span></div>
+        <div class="surge-row"><span class="surge-label">MoM Change</span><span class="surge-val" style="color:var(--red)">+14.2%</span></div>
+        <div class="surge-row"><span class="surge-label">CM At Risk / Deal</span><span class="surge-val" style="color:var(--red)">-$1,352</span></div>
+        <div class="surge-row"><span class="surge-label">Extra Hold (est.)</span><span class="surge-val">+17 days</span></div>
+        <span class="surge-badge surging">SURGING</span>
+      </div>
+      <div class="surge-card surging">
+        <div class="surge-market">Charlotte</div>
+        <div class="surge-row"><span class="surge-label">Inventory Z-Score</span><span class="surge-val" style="color:var(--red)">+1.73</span></div>
+        <div class="surge-row"><span class="surge-label">MoM Change</span><span class="surge-val" style="color:var(--red)">+13.8%</span></div>
+        <div class="surge-row"><span class="surge-label">CM At Risk / Deal</span><span class="surge-val" style="color:var(--red)">-$1,488</span></div>
+        <div class="surge-row"><span class="surge-label">Extra Hold (est.)</span><span class="surge-val">+17 days</span></div>
+        <span class="surge-badge surging">SURGING</span>
+      </div>
+      <div class="surge-card surging">
+        <div class="surge-market">Phoenix</div>
+        <div class="surge-row"><span class="surge-label">Inventory Z-Score</span><span class="surge-val" style="color:var(--orange)">+1.63</span></div>
+        <div class="surge-row"><span class="surge-label">MoM Change</span><span class="surge-val" style="color:var(--orange)">+12.1%</span></div>
+        <div class="surge-row"><span class="surge-label">CM At Risk / Deal</span><span class="surge-val" style="color:var(--orange)">-$1,552</span></div>
+        <div class="surge-row"><span class="surge-label">Extra Hold (est.)</span><span class="surge-val">+16 days</span></div>
+        <span class="surge-badge surging">SURGING</span>
+      </div>
+      <div class="surge-card surging">
+        <div class="surge-market">Dallas</div>
+        <div class="surge-row"><span class="surge-label">Inventory Z-Score</span><span class="surge-val" style="color:var(--orange)">+1.63</span></div>
+        <div class="surge-row"><span class="surge-label">MoM Change</span><span class="surge-val" style="color:var(--orange)">+11.9%</span></div>
+        <div class="surge-row"><span class="surge-label">CM At Risk / Deal</span><span class="surge-val" style="color:var(--orange)">-$1,632</span></div>
+        <div class="surge-row"><span class="surge-label">Extra Hold (est.)</span><span class="surge-val">+16 days</span></div>
+        <span class="surge-badge surging">SURGING</span>
+      </div>
+    </div>
+
+    <!-- Semantic Layer -->
+    <div class="sec-eyebrow" style="margin-bottom:8px">Semantic Layer — Natural Language to Structured Filters</div>
+    <div class="sec-sub" style="margin-bottom:16px">Business leaders say "show me capital-light opportunities." The semantic layer translates intent into exact filter criteria.</div>
+    <div class="semantic-grid">
+      <div class="sem-card">
+        <div class="sem-nl">"capital-light opportunities"</div>
+        <div class="sem-filter">total_capital &lt; $350k<br/>roi_pct &gt; 12%<br/>hold_days &lt; 55</div>
+      </div>
+      <div class="sem-card">
+        <div class="sem-nl">"high contribution margin"</div>
+        <div class="sem-filter">contribution_margin &gt; $40k<br/>cm_pct &gt; 10%</div>
+      </div>
+      <div class="sem-card">
+        <div class="sem-nl">"inventory surge"</div>
+        <div class="sem-filter">inventory_z_score &gt; 1.5<br/>(auto-triggers deal ranking)</div>
+      </div>
+      <div class="sem-card">
+        <div class="sem-nl">"fast turn deals"</div>
+        <div class="sem-filter">expected_hold_days &lt; 75<br/>dom &lt; 50</div>
+      </div>
+      <div class="sem-card">
+        <div class="sem-nl">"high-risk markets"</div>
+        <div class="sem-filter">days_on_market &gt; 45<br/>price_drop &gt; 2%<br/>months_supply &gt; 4.0</div>
+      </div>
+      <div class="sem-card">
+        <div class="sem-nl">"distressed acquisition"</div>
+        <div class="sem-filter">asking_discount &gt; 15%<br/>condition: moderate | full_gut</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Portfolio · Agentic Analytics Engineer</div>
+  <h1>I built Opendoor's<br/><em>proactive analytics system</em><br/>before the interview.</h1>
+  <p class="hero-sub">A working AI agent that monitors real estate markets, ranks acquisition deals by ROI, detects anomalies, and generates daily intelligence briefings — all without being asked.</p>
+  <div class="hero-stats">
+    <div class="stat"><div class="stat-num">5</div><div class="stat-label">Claude API Tools</div></div>
+    <div class="stat"><div class="stat-num">100</div><div class="stat-label">Deals Ranked by ROI</div></div>
+    <div class="stat"><div class="stat-num">4</div><div class="stat-label">Markets Monitored</div></div>
+    <div class="stat"><div class="stat-num">0</div><div class="stat-label">Dashboards Built</div></div>
+  </div>
+</div>
+
+<!-- WHAT I BUILT -->
+<section id="built">
+  <div class="inner">
+    <div class="sec-eyebrow">What I Built</div>
+    <div class="sec-title">A full analytics-to-action pipeline.</div>
+    <div class="sec-sub">Every component does one job. Claude orchestrates everything else.</div>
+
+    <div class="pipeline">
+      <div class="pipe-node">
+        <div class="pipe-label">Input</div>
+        <div class="pipe-name">Market Data</div>
+        <div class="pipe-sub">Multi-market CSV · Median price, DOM, volume, inventory</div>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Data Tools</div>
+        <div class="pipe-name">Market Layer</div>
+        <div class="pipe-sub">Summary · Trend · Anomaly · Risk score</div>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Deal Tools</div>
+        <div class="pipe-name">Deal Scout</div>
+        <div class="pipe-sub">Top 100 · ROI · CM forecast · Capital-light</div>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Decision Engine</div>
+        <div class="pipe-name">Pricing &amp; Conversion</div>
+        <div class="pipe-sub">LSR · Funnel drop · Decision Packets · Impact $</div>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Intelligence</div>
+        <div class="pipe-name">Claude Opus 4.6</div>
+        <div class="pipe-sub">Native tool use · Proactive loop · No wrappers</div>
+      </div>
+      <div class="pipe-arrow">&#8594;</div>
+      <div class="pipe-node">
+        <div class="pipe-label">Feedback Loop</div>
+        <div class="pipe-name">Self-Improving</div>
+        <div class="pipe-sub">Logs outcomes · Recalibrates confidence weights</div>
+      </div>
+    </div>
+
+    <div class="built-grid">
+      <div class="built-card">
+        <div class="built-icon" style="background:#071e33">&#x1F4E1;</div>
+        <div class="built-name">Proactive Market Monitor</div>
+        <div class="built-desc">Runs every morning with no input. Detects anomalies, scores risk across all markets, and generates a full briefing with ranked recommendations.</div>
+        <div class="built-file">src/monitor.py</div>
+      </div>
+      <div class="built-card">
+        <div class="built-icon" style="background:#071f12">&#x1F4AC;</div>
+        <div class="built-name">Natural Language Agent</div>
+        <div class="built-desc">Ask any market question in plain English. Claude decides which tools to call, chains them, and returns insight + evidence + action in one response.</div>
+        <div class="built-file">src/agent.py</div>
+      </div>
+      <div class="built-card">
+        <div class="built-icon" style="background:#140b22">&#x1F3E0;</div>
+        <div class="built-name">Deal Scout — Top 100 ROI Deals</div>
+        <div class="built-desc">Ranks all acquisition opportunities by ROI with full P&amp;L: buy price, reno cost, ARV, holding cost, net profit. Filter by market, capital budget, or ROI floor.</div>
+        <div class="built-file">src/tools/deal_scout.py</div>
+      </div>
+      <div class="built-card">
+        <div class="built-icon" style="background:#1f1005">&#x26A0;&#xFE0F;</div>
+        <div class="built-name">Risk Scoring Engine</div>
+        <div class="built-desc">5-signal weighted risk score (1-10) per market. Inputs: DOM trend, sales velocity, list-to-sale ratio, months of supply, price momentum.</div>
+        <div class="built-file">src/tools/analyzer.py</div>
+      </div>
+      <div class="built-card">
+        <div class="built-icon" style="background:#071e33">&#x1F527;</div>
+        <div class="built-name">Renovation Estimator</div>
+        <div class="built-desc">3-tier reno cost engine (cosmetic / moderate / full gut) with cost per sqft ranges, ARV uplift multipliers, and capital budget fit checks.</div>
+        <div class="built-file">src/tools/deal_scout.py</div>
+      </div>
+      <div class="built-card">
+        <div class="built-icon" style="background:#071f12">&#x1F4CA;</div>
+        <div class="built-name">Statistical Anomaly Detection</div>
+        <div class="built-desc">Z-score based outlier detection across price, DOM, and volume. Separates signal from seasonal noise. Feeds directly into the daily briefing.</div>
+        <div class="built-file">src/tools/data_loader.py</div>
+      </div>
+      <div class="built-card">
+        <div class="built-icon" style="background:#1f0a0a">&#x26A1;</div>
+        <div class="built-name">Pricing &amp; Conversion Decision Engine</div>
+        <div class="built-desc">LSR-based pricing drift detection → funnel stage diagnosis → Decision Packet with adjustment range, urgency, owner, and expected outcome. Severity: CRITICAL / HIGH / MEDIUM / LOW.</div>
+        <div class="built-file"><a href="decision-engine.html" style="color:var(--blue)">View Decision Engine →</a> &nbsp;·&nbsp; src/tools/pricing_engine.py</div>
+      </div>
+      <div class="built-card">
+        <div class="built-icon" style="background:#0a1a0a">&#x1F501;</div>
+        <div class="built-name">Feedback Loop — Self-Improving System</div>
+        <div class="built-desc">Every Decision Packet is logged with a predicted outcome. When the outcome is measured, prediction accuracy is computed and confidence weights are recalibrated automatically.</div>
+        <div class="built-file">src/tools/feedback_tracker.py</div>
+      </div>
+    </div>
+
+    <div style="margin-top:40px;padding:20px 24px;border:1px solid var(--border);border-radius:8px;background:var(--surface);display:flex;align-items:center;justify-content:space-between;gap:24px">
+      <div>
+        <div style="font-size:0.72rem;color:var(--muted);letter-spacing:.08em;text-transform:uppercase;margin-bottom:4px">Full System Architecture</div>
+        <div style="font-size:0.88rem;color:var(--text)">Agents · Tools · Skills · Copilot · Severity Framework · Feedback Loop · Production Roadmap</div>
+      </div>
+      <a href="../docs/architecture.md" style="font-size:0.78rem;color:var(--blue);text-decoration:none;white-space:nowrap;border:1px solid var(--blue);padding:6px 16px;border-radius:4px">architecture.md →</a>
+    </div>
+  </div>
+</section>
+
+<!-- MARKET RISK -->
+<section id="risk">
+  <div class="inner">
+    <div class="sec-eyebrow">Market Intelligence · Live Output</div>
+    <div class="sec-title">Portfolio-wide risk rankings.</div>
+    <div class="sec-sub">Generated by the agent every morning — no analyst required. Every score maps directly to an acquisition recommendation.</div>
+
+    <table class="risk-table">
+      <thead>
+        <tr>
+          <th>Rank</th>
+          <th>Market</th>
+          <th>Risk Score</th>
+          <th>Level</th>
+          <th>Price MoM</th>
+          <th>Months Supply</th>
+          <th>DOM</th>
+          <th>List/Sale</th>
+          <th>Key Signals</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="color:var(--muted);font-size:0.8rem">#1</td>
+          <td><div class="market-name">Charlotte</div></td>
+          <td>
+            <div class="score-bar-wrap">
+              <div class="score-bar"><div class="score-fill" style="width:90%;background:var(--red)"></div></div>
+              <div class="score-num" style="color:var(--red)">9</div>
+            </div>
+          </td>
+          <td><span class="badge high">HIGH</span></td>
+          <td class="neg money">-2.2%</td>
+          <td class="neg money">5.0 mo</td>
+          <td class="money warn">49 days</td>
+          <td class="money">0.95</td>
+          <td>
+            <div class="reason-list">
+              <div class="reason">DOM +6 days MoM</div>
+              <div class="reason">Sales -17.1% MoM</div>
+              <div class="reason">Buyer's market (5.0 mo)</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted);font-size:0.8rem">#2</td>
+          <td><div class="market-name">Atlanta</div></td>
+          <td>
+            <div class="score-bar-wrap">
+              <div class="score-bar"><div class="score-fill" style="width:80%;background:var(--red)"></div></div>
+              <div class="score-num" style="color:var(--red)">8</div>
+            </div>
+          </td>
+          <td><span class="badge high">HIGH</span></td>
+          <td class="neg money">-2.5%</td>
+          <td class="neg money">4.5 mo</td>
+          <td class="money warn">48 days</td>
+          <td class="money">0.95</td>
+          <td>
+            <div class="reason-list">
+              <div class="reason">Steepest price decline</div>
+              <div class="reason">Sales -14.8% MoM</div>
+              <div class="reason">Buyer's market (4.5 mo)</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted);font-size:0.8rem">#3</td>
+          <td><div class="market-name">Dallas</div></td>
+          <td>
+            <div class="score-bar-wrap">
+              <div class="score-bar"><div class="score-fill" style="width:70%;background:var(--orange)"></div></div>
+              <div class="score-num" style="color:var(--orange)">7</div>
+            </div>
+          </td>
+          <td><span class="badge high">HIGH</span></td>
+          <td class="neg money">-1.4%</td>
+          <td class="warn money">4.2 mo</td>
+          <td class="money">46 days</td>
+          <td class="money">0.95</td>
+          <td>
+            <div class="reason-list">
+              <div class="reason">Sales -16.0% MoM</div>
+              <div class="reason">Inventory building</div>
+              <div class="reason">Opportunistic only</div>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="color:var(--muted);font-size:0.8rem">#4</td>
+          <td><div class="market-name">Phoenix</div></td>
+          <td>
+            <div class="score-bar-wrap">
+              <div class="score-bar"><div class="score-fill" style="width:70%;background:var(--orange)"></div></div>
+              <div class="score-num" style="color:var(--orange)">7</div>
+            </div>
+          </td>
+          <td><span class="badge high">HIGH</span></td>
+          <td class="neg money">-1.0%</td>
+          <td class="warn money">4.2 mo</td>
+          <td class="money warn">50 days</td>
+          <td class="money">0.95</td>
+          <td>
+            <div class="reason-list">
+              <div class="reason">Sales -13.6% MoM</div>
+              <div class="reason">Highest DOM (50 days)</div>
+              <div class="reason">Opportunistic only</div>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <div style="background:var(--red-bg);border:1px solid #3d1010;border-radius:10px;padding:16px 20px;font-size:0.82rem;color:#fca5a5;line-height:1.7">
+      <strong style="color:var(--red)">Agent Recommendation (auto-generated):</strong>
+      Charlotte and Atlanta — PAUSE all new acquisitions. Dallas and Phoenix — opportunistic only at &ge;6% discount to 90-day comps.
+      Re-evaluate any deal in contract: seller leverage has collapsed across all 4 markets.
+    </div>
+  </div>
+</section>
+
+<!-- DEAL SCOUT -->
+<section id="deals">
+  <div class="inner">
+    <div class="sec-eyebrow">Deal Scout · Top Acquisition Opportunities</div>
+    <div class="sec-title">100 deals ranked by ROI. Full P&amp;L on every one.</div>
+    <div class="sec-sub">Buy price · Renovation cost · ARV · Net profit · Capital required. Ask the agent to filter by market, budget, or ROI floor in plain English.</div>
+
+    <!-- Reno Tiers -->
+    <div class="tier-grid">
+      <div class="tier-card">
+        <div class="tier-header">
+          <div>
+            <div class="tier-name">Cosmetic</div>
+            <div class="tier-scope">Paint · Flooring · Fixtures · Landscaping</div>
+          </div>
+          <span class="cond-chip cosmetic">cosmetic</span>
+        </div>
+        <div class="tier-stats">
+          <div class="tier-row"><span class="tier-row-label">Cost / sqft</span><span class="tier-row-val" style="color:#60a5fa">$12 – $22</span></div>
+          <div class="tier-row"><span class="tier-row-label">ARV Uplift</span><span class="tier-row-val" style="color:#60a5fa">+12%</span></div>
+          <div class="tier-row"><span class="tier-row-label">Avg ROI</span><span class="tier-row-val" style="color:#60a5fa">~3%</span></div>
+          <div class="tier-row"><span class="tier-row-label">Best for</span><span class="tier-row-val" style="color:var(--muted);font-size:0.75rem">Fast exits · Low risk</span></div>
+        </div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-header">
+          <div>
+            <div class="tier-name">Moderate</div>
+            <div class="tier-scope">Kitchen · Bathrooms · HVAC · Windows</div>
+          </div>
+          <span class="cond-chip moderate">moderate</span>
+        </div>
+        <div class="tier-stats">
+          <div class="tier-row"><span class="tier-row-label">Cost / sqft</span><span class="tier-row-val" style="color:var(--orange)">$28 – $45</span></div>
+          <div class="tier-row"><span class="tier-row-label">ARV Uplift</span><span class="tier-row-val" style="color:var(--orange)">+25%</span></div>
+          <div class="tier-row"><span class="tier-row-label">Avg ROI</span><span class="tier-row-val" style="color:var(--orange)">~16%</span></div>
+          <div class="tier-row"><span class="tier-row-label">Best for</span><span class="tier-row-val" style="color:var(--muted);font-size:0.75rem">Sweet spot · Core strategy</span></div>
+        </div>
+      </div>
+      <div class="tier-card">
+        <div class="tier-header">
+          <div>
+            <div class="tier-name">Full Gut</div>
+            <div class="tier-scope">Full structural remodel · New systems</div>
+          </div>
+          <span class="cond-chip full_gut">full gut</span>
+        </div>
+        <div class="tier-stats">
+          <div class="tier-row"><span class="tier-row-label">Cost / sqft</span><span class="tier-row-val" style="color:var(--purple)">$55 – $90</span></div>
+          <div class="tier-row"><span class="tier-row-label">ARV Uplift</span><span class="tier-row-val" style="color:var(--purple)">+42%</span></div>
+          <div class="tier-row"><span class="tier-row-label">Avg ROI</span><span class="tier-row-val" style="color:var(--purple)">~30%</span></div>
+          <div class="tier-row"><span class="tier-row-label">Best for</span><span class="tier-row-val" style="color:var(--muted);font-size:0.75rem">Max upside · Higher execution risk</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Deals Table -->
+    <table class="deal-table">
+      <thead>
+        <tr>
+          <th>Deal</th>
+          <th>Property</th>
+          <th>Condition</th>
+          <th>Buy Price</th>
+          <th>Reno Cost</th>
+          <th>ARV</th>
+          <th>Net Profit</th>
+          <th>ROI</th>
+          <th>Capital Req.</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><div class="deal-id">DEAL-092</div><div class="dom-chip long">61 DOM</div></td>
+          <td><div class="deal-addr">8989 Glendale Ave</div><div class="deal-meta">Phoenix · 5bd/3ba · 1,574 sqft</div></td>
+          <td><span class="cond-chip full_gut">full gut</span><div class="deal-meta" style="margin-top:4px">Full remodel + new systems</div></td>
+          <td><div class="money cost">$259,000</div><div class="deal-meta">Acq: $251,230</div></td>
+          <td><div class="money cost">$87,000</div></td>
+          <td><div class="money arv">$511,000</div></td>
+          <td><div class="money profit">$136,583</div></td>
+          <td><span class="roi-pill high">40.4%</span></td>
+          <td><div class="money cost">$338,230</div></td>
+        </tr>
+        <tr>
+          <td><div class="deal-id">DEAL-094</div><div class="dom-chip long">45 DOM</div></td>
+          <td><div class="deal-addr">4020 Thomas Rd</div><div class="deal-meta">Phoenix · 5bd/3ba · 1,636 sqft</div></td>
+          <td><span class="cond-chip full_gut">full gut</span><div class="deal-meta" style="margin-top:4px">Full remodel + new systems</div></td>
+          <td><div class="money cost">$249,000</div><div class="deal-meta">Acq: $241,530</div></td>
+          <td><div class="money cost">$92,000</div></td>
+          <td><div class="money arv">$491,000</div></td>
+          <td><div class="money profit">$122,696</div></td>
+          <td><span class="roi-pill high">36.8%</span></td>
+          <td><div class="money cost">$333,530</div></td>
+        </tr>
+        <tr>
+          <td><div class="deal-id">DEAL-066</div><div class="dom-chip long">55 DOM</div></td>
+          <td><div class="deal-addr">5211 Ross Ave</div><div class="deal-meta">Dallas · 4bd/2ba · 1,569 sqft</div></td>
+          <td><span class="cond-chip full_gut">full gut</span><div class="deal-meta" style="margin-top:4px">Full remodel + new systems</div></td>
+          <td><div class="money cost">$224,000</div><div class="deal-meta">Acq: $218,624</div></td>
+          <td><div class="money cost">$88,000</div></td>
+          <td><div class="money arv">$442,000</div></td>
+          <td><div class="money profit">$104,046</div></td>
+          <td><span class="roi-pill high">33.9%</span></td>
+          <td><div class="money cost">$306,624</div></td>
+        </tr>
+        <tr>
+          <td><div class="deal-id">DEAL-026</div><div class="dom-chip long">50 DOM</div></td>
+          <td><div class="deal-addr">135 Central Ave</div><div class="deal-meta">Charlotte · 3bd/2ba · 2,764 sqft</div></td>
+          <td><span class="cond-chip full_gut">full gut</span><div class="deal-meta" style="margin-top:4px">Full remodel + new systems</div></td>
+          <td><div class="money cost">$419,000</div><div class="deal-meta">Acq: $413,000</div></td>
+          <td><div class="money cost">$168,000</div></td>
+          <td><div class="money arv">$826,000</div></td>
+          <td><div class="money profit">$192,427</div></td>
+          <td><span class="roi-pill high">33.5%</span></td>
+          <td><div class="money cost">$575,058</div></td>
+        </tr>
+        <tr>
+          <td><div class="deal-id">DEAL-010</div><div class="dom-chip long">68 DOM</div></td>
+          <td><div class="deal-addr">2387 Ponce de Leon Ave</div><div class="deal-meta">Atlanta · 4bd/3ba · 1,970 sqft</div></td>
+          <td><span class="cond-chip full_gut">full gut</span><div class="deal-meta" style="margin-top:4px">Full remodel + new systems</div></td>
+          <td><div class="money cost">$270,000</div><div class="deal-meta">Acq: $267,300</div></td>
+          <td><div class="money cost">$118,000</div></td>
+          <td><div class="money arv">$532,000</div></td>
+          <td><div class="money profit">$113,590</div></td>
+          <td><span class="roi-pill high">29.8%</span></td>
+          <td><div class="money cost">$380,710</div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- AGENT Q&A -->
+<section id="agent">
+  <div class="inner">
+    <div class="sec-eyebrow">Natural Language Interface · Agent Q&amp;A</div>
+    <div class="sec-title">Ask anything. Get insight + action.</div>
+    <div class="sec-sub">Business leaders query data in plain English. The agent decides which tools to call, chains them, and returns a recommendation — not a chart.</div>
+
+    <div class="chat-window">
+      <div class="chat-bar">
+        <div class="chat-dot" style="background:#f87171"></div>
+        <div class="chat-dot" style="background:#fbbf24"></div>
+        <div class="chat-dot" style="background:#4ade80"></div>
+        <div class="chat-bar-title">src/agent.py — claude-opus-4-6 · native tool use</div>
+        <div class="chat-bar-badge">5 tools registered</div>
+      </div>
+      <div class="chat-body">
+
+        <div class="msg user">
+          <div class="msg-role">You</div>
+          <div class="msg-bubble">Which market should we pause acquisitions in right now, and what's the best deal available in a safer market?</div>
+        </div>
+        <div class="msg tool">
+          <div class="msg-role">Agent calling tools</div>
+          <div class="msg-bubble">
+            [tool: rank_all_markets()] &rarr; Charlotte 9/10, Atlanta 8/10, Dallas 7/10, Phoenix 7/10<br/>
+            [tool: get_top_deals(market="Dallas", min_roi=15)] &rarr; DEAL-066 · 33.9% ROI · $104k profit
+          </div>
+        </div>
+        <div class="msg agent">
+          <div class="msg-role">Agent</div>
+          <div class="msg-bubble">
+            <strong>Insight:</strong> Pause Charlotte and Atlanta immediately — both are in confirmed buyer's markets with deteriorating fundamentals on every signal.<br/><br/>
+            <strong>Evidence:</strong> Charlotte hit 9/10 risk: sales down 17.1% MoM, 5.0 months of supply, prices declining -2.2% MoM. Atlanta's price decline is actually steeper at -2.5% — the fastest in the portfolio. Neither market has a stabilization signal.<br/><br/>
+            <strong class="action">Action:</strong> Best available deal in Dallas (risk 7, more liquid): DEAL-066 at 5211 Ross Ave — 4bd/2ba, 1,569 sqft full gut. Buy at $218k, $88k reno, ARV $442k = <strong>$104k net profit at 33.9% ROI</strong>. 55 days DOM gives negotiating leverage. Approve at &ge;6% discount to current comps.
+          </div>
+        </div>
+
+        <div class="msg user">
+          <div class="msg-role">You</div>
+          <div class="msg-bubble">What does a $50k renovation budget get me on a 1,800 sqft house?</div>
+        </div>
+        <div class="msg tool">
+          <div class="msg-role">Agent calling tools</div>
+          <div class="msg-bubble">
+            [tool: estimate_renovation(condition="cosmetic", sqft=1800)] &rarr; $22k–$40k · +12% ARV<br/>
+            [tool: estimate_renovation(condition="moderate", sqft=1800)] &rarr; $50k–$81k · +25% ARV
+          </div>
+        </div>
+        <div class="msg agent">
+          <div class="msg-role">Agent</div>
+          <div class="msg-bubble">
+            <strong>Insight:</strong> $50k on 1,800 sqft gets you a full cosmetic renovation with room to spare, or the lower end of a moderate reno — the moderate path delivers 2x the value uplift.<br/><br/>
+            <strong>Evidence:</strong> Cosmetic ($12–$22/sqft) costs $22k–$40k and lifts ARV by +12%. Moderate ($28–$45/sqft) runs $50k–$81k mid at $66k and lifts ARV by +25%. At $50k budget, cosmetic fits cleanly; moderate requires $16k over budget.<br/><br/>
+            <strong class="action">Action:</strong> Do the cosmetic reno and bank the remaining $10–28k as a contingency reserve, or find a deal $15k cheaper on acquisition to unlock the moderate tier — the extra 13 points of ARV uplift is worth the stretch if you can create the budget room.
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ROLE FIT -->
+<section id="fit">
+  <div class="inner">
+    <div class="sec-eyebrow">Role Fit</div>
+    <div class="sec-title">Every requirement. Evidence from the code.</div>
+    <div class="sec-sub">What the JD asks for, mapped to what I shipped.</div>
+    <div class="skill-grid">
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; AI agents that surface insights without being asked</div>
+        <div class="skill-evidence"><code>src/monitor.py</code> — runs daily with no input, detects anomalies, scores all markets, outputs briefing + recommendations autonomously.</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; Natural language interface for business leaders</div>
+        <div class="skill-evidence"><code>src/agent.py</code> — plain English in, structured insight out. Claude natively decides which tools to call. No hardcoded routing.</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; Analytics-to-action pipeline</div>
+        <div class="skill-evidence">Every output follows <code>Insight → Evidence → Action</code>. Risk scores directly drive pause/proceed/renegotiate decisions.</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; Hands-on AI agent / LLM application experience</div>
+        <div class="skill-evidence">Built with Claude's native tool use API — 5 tools registered, multi-turn agentic loops, no LangChain or wrapper frameworks.</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; Identify high-ROI automation opportunities</div>
+        <div class="skill-evidence"><code>deal_scout.py</code> — ranks 100 deals by ROI with full P&amp;L. Replaces what would be a recurring analyst workflow with a single tool call.</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; Real estate domain knowledge</div>
+        <div class="skill-evidence">Signals mapped to Opendoor's actual risk exposure: DOM, months of supply, list-to-sale ratio, price momentum, ARV, holding cost, seller leverage.</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; Distinguish signal from noise</div>
+        <div class="skill-evidence">Z-score anomaly detection in <code>detect_anomalies()</code> — flags deviations &gt;1.5 standard deviations from market historical average.</div>
+      </div>
+
+      <div class="skill-card">
+        <div class="skill-jd">JD Requirement</div>
+        <div class="skill-req">&#x2713; Builder mindset — ship products, not dashboards</div>
+        <div class="skill-evidence">This page is the proof. Working agentic system with 5 Claude tools, risk engine, deal pipeline, and proactive briefing — built before the first interview.</div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<footer>
+  Built for <strong>Opendoor's Agentic Analytics Engineer</strong> role &middot;
+  Claude API (claude-opus-4-6) &middot; Native tool use &middot; Python 3.14 &middot; pandas &middot;
+  <strong>Zero dashboards.</strong>
+</footer>
+
+</body>
+</html>

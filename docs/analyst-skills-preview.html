@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agentic Analytics Engineer — Portfolio</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #0b0e17;
+      --surface: #131724;
+      --card: #1a1f2e;
+      --border: #252d42;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --dim: #334155;
+      --blue: #38bdf8;
+      --blue-bg: #0c2340;
+      --green: #4ade80;
+      --green-bg: #0d2a1a;
+      --purple: #c084fc;
+      --purple-bg: #1e0f2e;
+      --orange: #fb923c;
+      --red: #f87171;
+      --yellow: #fbbf24;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+    }
+
+    /* ── NAV ── */
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 16px 40px;
+      border-bottom: 1px solid var(--border);
+      background: var(--surface);
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+    .nav-logo { font-size: 0.9rem; font-weight: 700; color: var(--blue); letter-spacing: 0.05em; }
+    .nav-links { display: flex; gap: 24px; }
+    .nav-links a { font-size: 0.8rem; color: var(--muted); text-decoration: none; }
+    .nav-links a:hover { color: var(--text); }
+    .nav-badge {
+      font-size: 0.72rem;
+      background: var(--blue-bg);
+      color: var(--blue);
+      padding: 4px 12px;
+      border-radius: 999px;
+      border: 1px solid #1e4a6e;
+    }
+
+    /* ── HERO ── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 60px;
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .hero-eyebrow {
+      font-size: 0.75rem;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      margin-bottom: 16px;
+    }
+    .hero h1 {
+      font-size: 2.6rem;
+      font-weight: 800;
+      color: #f8fafc;
+      line-height: 1.2;
+      margin-bottom: 20px;
+    }
+    .hero h1 span { color: var(--blue); }
+    .hero p {
+      font-size: 1.05rem;
+      color: #94a3b8;
+      max-width: 640px;
+      margin: 0 auto 32px;
+    }
+    .hero-tags { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+    .hero-tag {
+      font-size: 0.75rem;
+      padding: 4px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--border);
+      color: var(--muted);
+    }
+
+    /* ── SECTION ── */
+    section { padding: 64px 24px; }
+    section + section { border-top: 1px solid var(--border); }
+    .section-inner { max-width: 1100px; margin: 0 auto; }
+    .section-label {
+      font-size: 0.7rem;
+      color: var(--blue);
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #f1f5f9;
+      margin-bottom: 8px;
+    }
+    .section-sub {
+      font-size: 0.9rem;
+      color: var(--muted);
+      margin-bottom: 40px;
+      max-width: 600px;
+    }
+
+    /* ── PHILOSOPHY SPLIT ── */
+    .split {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+    }
+    @media (max-width: 700px) { .split { grid-template-columns: 1fr; } }
+    .split-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 28px;
+    }
+    .split-card.bad { border-color: #3d1f1f; }
+    .split-card.good { border-color: #1a3a2a; }
+    .split-card-label {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 14px;
+    }
+    .split-card.bad .split-card-label { color: var(--red); }
+    .split-card.good .split-card-label { color: var(--green); }
+    .split-card ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+    .split-card ul li {
+      font-size: 0.85rem;
+      color: #94a3b8;
+      padding-left: 20px;
+      position: relative;
+    }
+    .split-card ul li::before { position: absolute; left: 0; }
+    .split-card.bad ul li::before { content: "✗"; color: var(--red); }
+    .split-card.good ul li::before { content: "✓"; color: var(--green); }
+
+    /* ── ARCHITECTURE ── */
+    .arch-flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      overflow-x: auto;
+      padding-bottom: 8px;
+      margin-bottom: 32px;
+    }
+    .arch-node {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px 20px;
+      min-width: 160px;
+      flex-shrink: 0;
+    }
+    .arch-node-label { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 4px; }
+    .arch-node-name { font-size: 0.9rem; font-weight: 600; color: var(--text); }
+    .arch-node-sub { font-size: 0.72rem; color: var(--dim); margin-top: 4px; }
+    .arch-arrow {
+      color: var(--dim);
+      font-size: 1.2rem;
+      padding: 0 8px;
+      flex-shrink: 0;
+    }
+    .arch-tools {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-top: 24px;
+    }
+    @media (max-width: 700px) { .arch-tools { grid-template-columns: 1fr; } }
+    .tool-chip {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 14px 16px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+    .tool-icon {
+      width: 32px; height: 32px;
+      border-radius: 6px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.85rem;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .tool-chip-name { font-size: 0.85rem; font-weight: 600; color: var(--text); }
+    .tool-chip-desc { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+
+    /* ── LIVE OUTPUT ── */
+    .briefing-shell {
+      background: #0a0d14;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .briefing-bar {
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot.r { background: #f87171; }
+    .dot.y { background: #fbbf24; }
+    .dot.g { background: #4ade80; }
+    .briefing-bar-title { font-size: 0.75rem; color: var(--muted); margin-left: 6px; }
+    .briefing-badge {
+      margin-left: auto;
+      font-size: 0.65rem;
+      background: var(--green-bg);
+      color: var(--green);
+      padding: 2px 10px;
+      border-radius: 999px;
+      border: 1px solid #1a4a2a;
+    }
+    .briefing-body {
+      padding: 28px 32px;
+      font-family: "Courier New", monospace;
+      font-size: 0.78rem;
+      line-height: 1.9;
+      color: #64748b;
+      max-height: 480px;
+      overflow-y: auto;
+    }
+    .briefing-body .b-title { color: #f1f5f9; font-weight: bold; font-size: 0.85rem; }
+    .briefing-body .b-head { color: var(--blue); font-weight: bold; }
+    .briefing-body .b-red { color: var(--red); }
+    .briefing-body .b-yellow { color: var(--yellow); }
+    .briefing-body .b-green { color: var(--green); }
+    .briefing-body .b-dim { color: #334155; }
+    .briefing-body .b-action { color: var(--orange); font-weight: bold; }
+    .briefing-body table { width: 100%; border-collapse: collapse; margin: 8px 0; }
+    .briefing-body th { color: var(--muted); font-weight: 600; text-align: left; padding: 4px 8px; border-bottom: 1px solid var(--border); }
+    .briefing-body td { padding: 5px 8px; color: #94a3b8; }
+    .briefing-body td.hi { color: var(--red); font-weight: 600; }
+    .briefing-body td.med { color: var(--yellow); }
+
+    /* ── ANALYST CARDS ── */
+    .analyst-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+      gap: 20px;
+    }
+    .acard {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .acard-header { display: flex; align-items: flex-start; gap: 14px; }
+    .avatar {
+      width: 44px; height: 44px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem; font-weight: 800; flex-shrink: 0;
+    }
+    .ivy .avatar { background: var(--blue-bg); color: var(--blue); }
+    .ken .avatar { background: var(--green-bg); color: var(--green); }
+    .jay .avatar { background: var(--purple-bg); color: var(--purple); }
+    .aname { font-size: 1rem; font-weight: 600; color: #f1f5f9; }
+    .afirm { font-size: 0.75rem; color: var(--muted); margin-top: 2px; }
+    .atag {
+      display: inline-block; padding: 2px 10px; border-radius: 999px;
+      font-size: 0.68rem; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.05em; margin-top: 5px;
+    }
+    .ivy .atag { background: var(--blue-bg); color: #93c5fd; border: 1px solid #1e4a6e; }
+    .ken .atag { background: var(--green-bg); color: #86efac; border: 1px solid #1a4a2a; }
+    .jay .atag { background: var(--purple-bg); color: #d8b4fe; border: 1px solid #3a1f5e; }
+    .slabel { font-size: 0.65rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+    .signals { display: flex; flex-direction: column; gap: 5px; }
+    .sig-row {
+      display: flex; justify-content: space-between; align-items: center;
+      font-size: 0.8rem; padding: 5px 10px;
+      background: #0f1320; border-radius: 6px;
+    }
+    .sig-name { color: #cbd5e1; }
+    .wt { font-size: 0.68rem; font-weight: 700; padding: 2px 8px; border-radius: 4px; }
+    .ivy .wt { background: var(--blue-bg); color: #93c5fd; }
+    .ken .wt { background: var(--green-bg); color: #86efac; }
+    .jay .wt { background: var(--purple-bg); color: #d8b4fe; }
+    .when-text {
+      font-size: 0.8rem; color: #94a3b8; line-height: 1.6;
+      border-left: 2px solid var(--border); padding-left: 12px;
+    }
+    .aoutput {
+      background: #080b12; border-radius: 8px; padding: 14px;
+      font-size: 0.76rem; color: var(--muted);
+      font-family: "Courier New", monospace; line-height: 1.8;
+    }
+    .ivy .aoutput .hl { color: var(--blue); }
+    .ken .aoutput .hl { color: var(--green); }
+    .jay .aoutput .hl { color: var(--purple); }
+
+    /* ── SKILL MATCH ── */
+    .match-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 16px;
+    }
+    .match-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 20px;
+    }
+    .match-card-head {
+      display: flex; align-items: center; gap: 10px; margin-bottom: 14px;
+    }
+    .match-icon {
+      width: 34px; height: 34px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 0.9rem;
+    }
+    .match-card-title { font-size: 0.9rem; font-weight: 600; color: #f1f5f9; }
+    .match-card-req { font-size: 0.7rem; color: var(--muted); margin-top: 1px; }
+    .match-evidence {
+      font-size: 0.78rem; color: #94a3b8; line-height: 1.6;
+      border-left: 2px solid var(--border); padding-left: 10px;
+    }
+    .match-evidence code {
+      color: var(--blue); background: var(--blue-bg);
+      padding: 1px 6px; border-radius: 3px; font-size: 0.72rem;
+    }
+
+    /* ── STACK ── */
+    .stack-row {
+      display: flex; flex-wrap: wrap; gap: 10px; margin-top: 16px;
+    }
+    .stack-chip {
+      background: var(--card); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 16px;
+      font-size: 0.8rem; color: #94a3b8;
+      display: flex; align-items: center; gap: 8px;
+    }
+    .stack-chip .dot2 {
+      width: 7px; height: 7px; border-radius: 50%; background: var(--blue);
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      text-align: center;
+      padding: 48px 24px;
+      border-top: 1px solid var(--border);
+      font-size: 0.8rem;
+      color: var(--muted);
+    }
+    footer strong { color: var(--text); }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">⬡ OPENDOOR · AGENTIC ANALYTICS</div>
+  <div class="nav-links">
+    <a href="#problem">Problem</a>
+    <a href="#architecture">Architecture</a>
+    <a href="#output">Live Output</a>
+    <a href="#analysts">Analyst Skills</a>
+    <a href="#fit">Role Fit</a>
+  </div>
+  <div class="nav-badge">Built with Claude API · Python</div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-eyebrow">Portfolio — Agentic Analytics Engineer</div>
+  <h1>I built the system<br/>Opendoor is hiring for.<br/><span>Before the interview.</span></h1>
+  <p>
+    A proactive AI agent that monitors real estate market data, surfaces acquisition risk,
+    and generates daily intelligence briefings — without being asked.
+    Built on Claude's native tool use, no wrappers.
+  </p>
+  <div class="hero-tags">
+    <span class="hero-tag">Claude API · Native Tool Use</span>
+    <span class="hero-tag">Proactive Intelligence</span>
+    <span class="hero-tag">Analytics → Action Pipeline</span>
+    <span class="hero-tag">Real Estate Domain</span>
+    <span class="hero-tag">Python · pandas</span>
+    <span class="hero-tag">No Dashboards</span>
+  </div>
+</div>
+
+<!-- PROBLEM -->
+<section id="problem">
+  <div class="section-inner">
+    <div class="section-label">The Problem</div>
+    <div class="section-title">Most analytics teams are in reactive mode.</div>
+    <div class="section-sub">Opendoor wants to flip that. So did I when building this.</div>
+    <div class="split">
+      <div class="split-card bad">
+        <div class="split-card-label">Old Model — Reactive Analytics</div>
+        <ul>
+          <li>Analyst waits for someone to ask a question</li>
+          <li>Builds a dashboard that goes stale in 30 days</li>
+          <li>Outputs a chart — no recommendation</li>
+          <li>Leaders decide when to look at data</li>
+          <li>Signal buried in noise, no alerting logic</li>
+          <li>Success metric: dashboards built</li>
+        </ul>
+      </div>
+      <div class="split-card good">
+        <div class="split-card-label">New Model — Proactive Agent (what I built)</div>
+        <ul>
+          <li>Agent monitors markets daily — no question needed</li>
+          <li>Detects anomalies vs. historical baseline automatically</li>
+          <li>Every output ends with a recommended action</li>
+          <li>Agent surfaces insights before leaders think to ask</li>
+          <li>Statistical outlier detection separates signal from noise</li>
+          <li>Success metric: acquisition decisions influenced</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ARCHITECTURE -->
+<section id="architecture">
+  <div class="section-inner">
+    <div class="section-label">Architecture</div>
+    <div class="section-title">Analytics-to-Action Pipeline</div>
+    <div class="section-sub">Each component does one thing. Claude orchestrates the rest.</div>
+
+    <div class="arch-flow">
+      <div class="arch-node">
+        <div class="arch-node-label">Data Layer</div>
+        <div class="arch-node-name">housing_market.csv</div>
+        <div class="arch-node-sub">Multi-market, multi-month</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-node-label">Tool Layer</div>
+        <div class="arch-node-name">3 Data Tools</div>
+        <div class="arch-node-sub">Summary · Trend · Anomalies</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-node-label">Scoring Engine</div>
+        <div class="arch-node-name">Risk Analyzer</div>
+        <div class="arch-node-sub">1-10 per market · 5 signals</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-node-label">Intelligence Layer</div>
+        <div class="arch-node-name">Claude (Opus 4.6)</div>
+        <div class="arch-node-sub">Native tool use · No wrappers</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <div class="arch-node-label">Output</div>
+        <div class="arch-node-name">Briefing + Q&amp;A</div>
+        <div class="arch-node-sub">Saved markdown · NL interface</div>
+      </div>
+    </div>
+
+    <div class="arch-tools">
+      <div class="tool-chip">
+        <div class="tool-icon" style="background:#0c2340;color:#38bdf8;">S</div>
+        <div>
+          <div class="tool-chip-name">get_market_summary()</div>
+          <div class="tool-chip-desc">Latest metrics for any market — median price, DOM, sales volume, list-to-sale ratio</div>
+        </div>
+      </div>
+      <div class="tool-chip">
+        <div class="tool-icon" style="background:#0d2a1a;color:#4ade80;">T</div>
+        <div>
+          <div class="tool-chip-name">get_price_trend()</div>
+          <div class="tool-chip-desc">MoM price momentum with directional signal — inputs acquisition timing logic</div>
+        </div>
+      </div>
+      <div class="tool-chip">
+        <div class="tool-icon" style="background:#1e0f2e;color:#c084fc;">A</div>
+        <div>
+          <div class="tool-chip-name">detect_anomalies()</div>
+          <div class="tool-chip-desc">Z-score based statistical outlier detection — separates signal from seasonal noise</div>
+        </div>
+      </div>
+      <div class="tool-chip">
+        <div class="tool-icon" style="background:#2a1a0a;color:#fb923c;">R</div>
+        <div>
+          <div class="tool-chip-name">score_market_risk()</div>
+          <div class="tool-chip-desc">5-signal weighted risk score 1–10 per market with trigger thresholds</div>
+        </div>
+      </div>
+      <div class="tool-chip">
+        <div class="tool-icon" style="background:#2a1a0a;color:#fb923c;">⬡</div>
+        <div>
+          <div class="tool-chip-name">rank_all_markets()</div>
+          <div class="tool-chip-desc">Portfolio-wide risk ranking — inputs capital allocation and pause decisions</div>
+        </div>
+      </div>
+      <div class="tool-chip">
+        <div class="tool-icon" style="background:#1a1020;color:#e879f9;">M</div>
+        <div>
+          <div class="tool-chip-name">src/monitor.py</div>
+          <div class="tool-chip-desc">Proactive daily briefing — no question needed. Auto-saves to briefings/ as markdown</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- LIVE OUTPUT -->
+<section id="output">
+  <div class="section-inner">
+    <div class="section-label">Live Agent Output</div>
+    <div class="section-title">What the agent surfaces every morning.</div>
+    <div class="section-sub">This is real output generated by the agent — not mocked. March 29, 2026.</div>
+
+    <div class="briefing-shell">
+      <div class="briefing-bar">
+        <div class="dot r"></div><div class="dot y"></div><div class="dot g"></div>
+        <div class="briefing-bar-title">briefings/briefing_2026-03-29.md — generated by src/monitor.py</div>
+        <div class="briefing-badge">✓ Auto-generated · No prompt needed</div>
+      </div>
+      <div class="briefing-body">
+        <span class="b-title">DAILY MARKET INTELLIGENCE BRIEFING</span><br/>
+        <span class="b-dim">Date: March 29, 2026 · Data through: December 2024 vintage</span><br/><br/>
+
+        <span class="b-head">── 1. EXECUTIVE SUMMARY ──────────────────────────</span><br/><br/>
+        <span class="b-red">● All four tracked markets are HIGH risk (scores 7–9).</span><br/>
+        &nbsp;&nbsp;Charlotte and Atlanta are most distressed — prices declining,<br/>
+        &nbsp;&nbsp;sales in freefall, months of supply in buyer's-market territory.<br/><br/>
+        <span class="b-red">● Sales volume has collapsed across the board.</span><br/>
+        &nbsp;&nbsp;Every market is selling 35–43% fewer homes than historical average.<br/>
+        &nbsp;&nbsp;DOM surged 30–47% above normal. This is structural, not seasonal.<br/><br/>
+        <span class="b-yellow">● Charlotte is the single riskiest market (9/10).</span><br/>
+        &nbsp;&nbsp;Fastest sales drop (−17.1% MoM) + highest supply (5.0 mo).<br/><br/>
+
+        <span class="b-head">── 2. MARKET RISK RANKINGS ───────────────────────</span><br/><br/>
+        <table>
+          <tr><th>Rank</th><th>Market</th><th>Risk</th><th>Price MoM</th><th>Supply</th><th>DOM</th><th>Vol MoM</th></tr>
+          <tr><td>1</td><td class="hi">Charlotte</td><td class="hi">9/10</td><td class="hi">−2.2%</td><td class="hi">5.0 mo</td><td>49</td><td class="hi">−17.1%</td></tr>
+          <tr><td>2</td><td class="hi">Atlanta</td><td class="hi">8/10</td><td class="hi">−2.5%</td><td>4.5 mo</td><td>48</td><td class="hi">−14.8%</td></tr>
+          <tr><td>3</td><td class="med">Dallas</td><td class="med">7/10</td><td class="med">−1.4%</td><td>4.2 mo</td><td>46</td><td class="med">−16.0%</td></tr>
+          <tr><td>4</td><td class="med">Phoenix</td><td class="med">7/10</td><td class="med">−1.0%</td><td>4.2 mo</td><td>50</td><td class="med">−13.6%</td></tr>
+        </table><br/>
+
+        <span class="b-head">── 3. RECOMMENDED ACTIONS THIS WEEK ─────────────</span><br/><br/>
+        <span class="b-action">1. Charlotte — PAUSE all new acquisitions.</span><br/>
+        &nbsp;&nbsp;Risk 9/10. Re-evaluate pipeline with 8–10% discount to comps.<br/><br/>
+        <span class="b-action">2. Atlanta — Stress-test current portfolio.</span><br/>
+        &nbsp;&nbsp;Apply −5% to −10% price correction scenario. Accelerate dispositions<br/>
+        &nbsp;&nbsp;on thin-margin assets before further softening.<br/><br/>
+        <span class="b-action">3. Dallas &amp; Phoenix — Opportunistic only.</span><br/>
+        &nbsp;&nbsp;Approve at ≥6% discount to 90-day comps. Strong rent-yield required.<br/><br/>
+        <span class="b-action">4. All Markets — Renegotiate deals under contract.</span><br/>
+        &nbsp;&nbsp;DOM surge + seller leverage loss = justification for price adjustments.<br/>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ANALYST SKILLS -->
+<section id="analysts">
+  <div class="section-inner">
+    <div class="section-label">Analyst Intelligence Skills</div>
+    <div class="section-title">Three expert frameworks. One agent.</div>
+    <div class="section-sub">
+      The agent can reason through any market using the lens of the most respected analysts in real estate.
+      Each skill defines what to measure, how to weight it, and how to frame the output.
+    </div>
+
+    <div class="analyst-grid">
+
+      <!-- IVY ZELMAN -->
+      <div class="acard ivy">
+        <div class="acard-header">
+          <div class="avatar">IZ</div>
+          <div>
+            <div class="aname">Ivy Zelman</div>
+            <div class="afirm">Zelman &amp; Associates</div>
+            <span class="atag">For-Sale Housing</span>
+          </div>
+        </div>
+        <div>
+          <div class="slabel">Signature Signals</div>
+          <div class="signals">
+            <div class="sig-row"><span class="sig-name">Homebuilder cancellation rate</span><span class="wt">HIGH</span></div>
+            <div class="sig-row"><span class="sig-name">New construction vs. resale mix</span><span class="wt">HIGH</span></div>
+            <div class="sig-row"><span class="sig-name">Months of supply (new homes)</span><span class="wt">MED</span></div>
+            <div class="sig-row"><span class="sig-name">Mortgage lock-in effect</span><span class="wt">MED</span></div>
+            <div class="sig-row"><span class="sig-name">Entry-level affordability index</span><span class="wt">MED</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="slabel">When to Invoke</div>
+          <p class="when-text">For-sale acquisitions · Builder competition risk · Supply-cycle turning points</p>
+        </div>
+        <div class="aoutput">
+          <span class="hl">→ Zelman Framework:</span><br/>
+          "Phoenix showing builder concession spike<br/>
+          (+8 pts MoM). Cancellation rate elevated.<br/>
+          <strong>Pause acquisitions</strong> until absorption<br/>
+          normalizes (&gt;3 months)."
+        </div>
+      </div>
+
+      <!-- KEN ZENER -->
+      <div class="acard ken">
+        <div class="acard-header">
+          <div class="avatar">KZ</div>
+          <div>
+            <div class="aname">Ken Zener</div>
+            <div class="afirm">Keybanc Capital Markets</div>
+            <span class="atag">Capital Markets / Rates</span>
+          </div>
+        </div>
+        <div>
+          <div class="slabel">Signature Signals</div>
+          <div class="signals">
+            <div class="sig-row"><span class="sig-name">30-yr mortgage rate delta</span><span class="wt">HIGH</span></div>
+            <div class="sig-row"><span class="sig-name">List-to-sale price ratio</span><span class="wt">HIGH</span></div>
+            <div class="sig-row"><span class="sig-name">Rate lock-out seller count</span><span class="wt">MED</span></div>
+            <div class="sig-row"><span class="sig-name">Credit availability index</span><span class="wt">MED</span></div>
+            <div class="sig-row"><span class="sig-name">Days on market vs. rate curve</span><span class="wt">MED</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="slabel">When to Invoke</div>
+          <p class="when-text">Rate sensitivity · Capital allocation across markets · Spread vs. cost-of-carry</p>
+        </div>
+        <div class="aoutput">
+          <span class="hl">→ Zener Framework:</span><br/>
+          "Austin list-to-sale ratio fell to 0.93 as<br/>
+          rates moved +40bps. Inventory unlocking —<br/>
+          <strong>buyer window opening</strong> next 30–45 days."
+        </div>
+      </div>
+
+      <!-- JAY PARSONS -->
+      <div class="acard jay">
+        <div class="acard-header">
+          <div class="avatar">JP</div>
+          <div>
+            <div class="aname">Jay Parsons</div>
+            <div class="afirm">Multifamily Analytics</div>
+            <span class="atag">Multifamily / Rental</span>
+          </div>
+        </div>
+        <div>
+          <div class="slabel">Signature Signals</div>
+          <div class="signals">
+            <div class="sig-row"><span class="sig-name">Net absorption vs. new supply</span><span class="wt">HIGH</span></div>
+            <div class="sig-row"><span class="sig-name">Effective rent growth (net concessions)</span><span class="wt">HIGH</span></div>
+            <div class="sig-row"><span class="sig-name">Occupancy rate trend</span><span class="wt">MED</span></div>
+            <div class="sig-row"><span class="sig-name">Lease-up velocity (new builds)</span><span class="wt">MED</span></div>
+            <div class="sig-row"><span class="sig-name">Renter-to-buyer conversion rate</span><span class="wt">LOW</span></div>
+          </div>
+        </div>
+        <div>
+          <div class="slabel">When to Invoke</div>
+          <p class="when-text">Multifamily markets · Rent vs. own demand shifts · New supply pipeline impact</p>
+        </div>
+        <div class="aoutput">
+          <span class="hl">→ Parsons Framework:</span><br/>
+          "Dallas-Fort Worth: 14k units delivering Q2–Q3.<br/>
+          Occupancy softening to 92.4%. Rent-to-own<br/>
+          conversions rising — <strong>demand spillover likely</strong>."
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ROLE FIT -->
+<section id="fit">
+  <div class="section-inner">
+    <div class="section-label">Role Fit</div>
+    <div class="section-title">What the job requires. What I built.</div>
+    <div class="section-sub">Every requirement from the posting, mapped to a specific artifact.</div>
+
+    <div class="match-grid">
+
+      <div class="match-card">
+        <div class="match-card-head">
+          <div class="match-icon" style="background:#0c2340;">🤖</div>
+          <div>
+            <div class="match-card-title">AI Agents in Production</div>
+            <div class="match-card-req">JD: "Build and deploy AI agents"</div>
+          </div>
+        </div>
+        <div class="match-evidence">
+          Built <code>src/agent.py</code> and <code>src/monitor.py</code> using Claude's native tool use API — no LangChain, no wrappers. Agent autonomously decides which tools to call based on context.
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-card-head">
+          <div class="match-icon" style="background:#0d2a1a;">📡</div>
+          <div>
+            <div class="match-card-title">Proactive Intelligence</div>
+            <div class="match-card-req">JD: "Surface insights without being asked"</div>
+          </div>
+        </div>
+        <div class="match-evidence">
+          <code>src/monitor.py</code> generates full market briefings with no input — it decides what matters, ranks risks, and recommends actions autonomously every run.
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-card-head">
+          <div class="match-icon" style="background:#1e0f2e;">💬</div>
+          <div>
+            <div class="match-card-title">Natural Language Interface</div>
+            <div class="match-card-req">JD: "Let leaders query data conversationally"</div>
+          </div>
+        </div>
+        <div class="match-evidence">
+          <code>src/agent.py</code> accepts plain English — "Which market is riskiest this month?" → Claude calls tools → structured insight with recommended action.
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-card-head">
+          <div class="match-icon" style="background:#2a1a0a;">📊</div>
+          <div>
+            <div class="match-card-title">Insight → Action Pipeline</div>
+            <div class="match-card-req">JD: "Connect insight generation to recommended actions"</div>
+          </div>
+        </div>
+        <div class="match-evidence">
+          Every output follows: <code>Insight → Evidence → Action</code>. Risk scores feed directly into pause/proceed/accelerate acquisition recommendations.
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-card-head">
+          <div class="match-icon" style="background:#1a1020;">🏠</div>
+          <div>
+            <div class="match-card-title">Real Estate Domain</div>
+            <div class="match-card-req">JD: "Bonus: real estate experience"</div>
+          </div>
+        </div>
+        <div class="match-evidence">
+          Built around Opendoor's actual acquisition metrics: DOM, months of supply, list-to-sale ratio, price momentum, sales velocity. Signals mapped to analyst frameworks (Zelman, Zener, Parsons).
+        </div>
+      </div>
+
+      <div class="match-card">
+        <div class="match-card-head">
+          <div class="match-icon" style="background:#0c2340;">⚡</div>
+          <div>
+            <div class="match-card-title">Builder Mindset</div>
+            <div class="match-card-req">JD: "You ship products, not dashboards"</div>
+          </div>
+        </div>
+        <div class="match-evidence">
+          This page is the proof. Built a working agentic system — data tools, risk engine, proactive briefing, analyst skill frameworks — before the first interview.
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- STACK -->
+<section>
+  <div class="section-inner">
+    <div class="section-label">Tech Stack</div>
+    <div class="section-title">Modern, minimal, production-ready.</div>
+    <div class="stack-row">
+      <div class="stack-chip"><div class="dot2"></div> Claude API (claude-opus-4-6) · Native Tool Use</div>
+      <div class="stack-chip"><div class="dot2"></div> Python 3.14</div>
+      <div class="stack-chip"><div class="dot2"></div> pandas · statistical anomaly detection</div>
+      <div class="stack-chip"><div class="dot2"></div> python-dotenv · secure config</div>
+      <div class="stack-chip"><div class="dot2"></div> Structured tool outputs (JSON-serializable dicts)</div>
+      <div class="stack-chip"><div class="dot2"></div> Markdown briefing auto-save pipeline</div>
+      <div class="stack-chip"><div class="dot2"></div> Z-score based outlier detection</div>
+      <div class="stack-chip"><div class="dot2"></div> 5-signal weighted risk scoring (1–10)</div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  Built specifically for <strong>Opendoor's Agentic Analytics Engineer</strong> role ·
+  Demonstrates Default-to-AI in practice ·
+  Source: <strong>github.com / opendoor-agent</strong>
+</footer>
+
+</body>
+</html>
