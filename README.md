@@ -118,7 +118,7 @@ A separate deterministic detection pipeline — runs without an API key (`--mock
 
 ```bash
 # 1. Clone and install
-git clone https://github.com/YOUR_USERNAME/opendoor-agent.git
+git clone https://github.com/ronokelishek/opendoor-agent.git
 cd opendoor-agent
 pip install -r requirements.txt
 
