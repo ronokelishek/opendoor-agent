@@ -6,13 +6,15 @@ Built as a portfolio demonstration for Opendoor's **Senior Agentic Analytics Eng
 
 ---
 
-## Live Demo Pages
+## Live Demo
 
-| Page | What it shows |
-|------|--------------|
-| [Portfolio Overview](docs/portfolio.html) | Full system walkthrough — Capital-Light strategy, deal scout, market risk |
-| [Decision Engine](docs/decision-engine.html) | Pricing & Conversion alerts — Decision Packets, severity framework, feedback loop |
-| [Production Architecture](docs/production-architecture.html) | AWS diagram — all upstream systems, Snowflake tables, real-time data flow |
+**[→ View the full portfolio](https://ronokelishek.github.io/opendoor-agent/portfolio.html)**
+
+| Page | Live Link | What it shows |
+|------|-----------|--------------|
+| Portfolio Overview | [portfolio.html](https://ronokelishek.github.io/opendoor-agent/portfolio.html) | Full system walkthrough — Capital-Light strategy, deal scout, market risk |
+| Decision Engine | [decision-engine.html](https://ronokelishek.github.io/opendoor-agent/decision-engine.html) | Pricing & Conversion alerts — Decision Packets, severity framework, feedback loop |
+| Production Architecture | [production-architecture.html](https://ronokelishek.github.io/opendoor-agent/production-architecture.html) | AWS diagram — all upstream systems, Snowflake tables, real-time data flow |
 
 ---
 
