@@ -1,187 +1,336 @@
-# Opendoor Agentic Analytics System
+# Agentic Analytics System · Real Estate Decision Intelligence
 
-> **"Most analytics teams answer questions. This system anticipates them — and tells you what it's going to cost if you don't act."**
+> **A proactive AI agent that monitors real estate markets, detects risk before it compounds, and delivers decision-ready recommendations — without being asked.**
 
-Built as a portfolio demonstration for Opendoor's **Senior Agentic Analytics Engineer** role. This is a full analytics-to-action pipeline powered by Claude's native tool use — no LangChain, no wrappers, just the Anthropic SDK and clean Python.
+Built to demonstrate what agentic analytics looks like at production scale:
+two agents, a full tool layer, native Claude tool use, and outputs that tell an acquisitions team exactly what to do and what it costs if they don't.
 
----
-
-## Live Demo
-
-**[→ View the full portfolio](https://ronokelishek.github.io/opendoor-agent/portfolio.html)**
-
-| Page | Live Link | What it shows |
-|------|-----------|--------------|
-| Portfolio Overview | [portfolio.html](https://ronokelishek.github.io/opendoor-agent/portfolio.html) | Full system walkthrough — Capital-Light strategy, deal scout, market risk |
-| Decision Engine | [decision-engine.html](https://ronokelishek.github.io/opendoor-agent/decision-engine.html) | Pricing & Conversion alerts — Decision Packets, severity framework, feedback loop |
-| Production Architecture | [production-architecture.html](https://ronokelishek.github.io/opendoor-agent/production-architecture.html) | AWS diagram — all upstream systems, Snowflake tables, real-time data flow |
+**→ [See it live](https://ronokelishek.github.io/opendoor-agent/portfolio.html)**
 
 ---
 
-## What This System Does
+## The Problem
 
-Two agents, running on different triggers:
+Most analytics teams are reactive by design.
+
+A market starts softening on Monday. The dashboard shows it by Wednesday. Someone notices on Thursday. A report goes out Friday. A decision gets made the following week — after 10 deals have already been mispriced, 15 seller conversations have gone sideways, and $180k in margin has quietly walked out the door.
+
+The gap isn't data. It's the time between signal and action.
+
+> When pricing drifts 3% above market, acceptance rate drops — but no one sees it for two weeks. By then, the damage is done.
+
+---
+
+## The Solution
+
+This system runs a proactive intelligence loop. Every morning, without prompting, it:
+
+1. Scans all active markets for pricing drift, inventory aging, and funnel deterioration
+2. Scores each issue by severity and quantifies the dollar impact
+3. Generates a Decision Packet — not an insight, an action plan with an owner and a deadline
+4. Logs the prediction, tracks the outcome, and recalibrates its own confidence weights over time
+
+It doesn't summarize data. It tells you what's broken, what it's costing, and what to do about it.
+
+---
+
+## Meet the Agents
+
+### `monitor-agent` — Proactive Daily Intelligence
 
 ```
-analytics-agent    →  on-demand Q&A
-                       "Which markets should I pause acquisitions in?"
-
-monitor-agent      →  proactive daily scan — no question needed
-                       Runs every morning, finds what matters before anyone asks
+Trigger:   6am daily (EventBridge scheduler) or on-demand
+Input:     None required
+Output:    Decision Packets · Severity-ranked alerts · Slack / markdown briefing
 ```
 
-Every response follows the same output contract:
+The monitor agent runs without being asked. It scans every market through a structured sequence:
 
 ```
-Issue     →  what is happening (evidence-grounded, specific)
-Impact    →  what it's costing (homes/month, margin dollars, annualized)
-Action    →  exactly what to do (owner assigned, urgency stated, 2–3 steps)
-Outcome   →  what we expect to happen (measurable, time-bound)
+analyze_pricing_accuracy()     →  detect offer drift vs. market
+    ↓ if HIGH severity
+analyze_funnel_drop()          →  diagnose where conversion is breaking
+generate_pricing_actions()     →  produce specific adjustments with deadlines
+estimate_business_impact()     →  translate signal into homes/month and margin $
+
+detect_inventory_surges()      →  flag markets where capital is aging
+rank_top_100_deals()           →  surface the highest CM/day opportunities
+get_contribution_margin_forecast()  →  portfolio-level margin outlook
+```
+
+Each issue that clears the severity threshold becomes a **Decision Packet** — structured, assigned, time-bound.
+
+---
+
+### `analytics-agent` — On-Demand Q&A
+
+```
+Trigger:   Natural language question from analyst or operator
+Input:     Any market, deal, or risk question in plain English
+Output:    Insight → Evidence → Recommended Action
+```
+
+Ask it anything. It decides which tools to call, in what order, how many times — and synthesizes the results into a structured answer that a VP can act on.
+
+```
+You:    What markets should I be worried about right now?
+
+        [calling: detect_anomalies]
+        [calling: rank_all_markets]
+
+Agent:  Charlotte and Dallas are showing the same early-cycle warning pattern.
+        DOM up 47% above average. Homes sold down 43% MoM.
+        List-to-sale ratio approaching the 0.94 pause threshold.
+
+        Action: Tighten acquisition spreads in Charlotte immediately.
+                Reduce buy-box volume. If LSR < 0.94 next week — pause new offers.
 ```
 
 ---
 
-## System Architecture
+## Example Outputs
+
+### Daily Market Risk Briefing
 
 ```
-Upstream Sources (MLS, Offer DB, AVM, CRM, Reno Tracker)
-        │
-        ▼
-AWS Ingestion (Kinesis · S3 · Glue / dbt)
-        │
-        ▼
-Snowflake (raw.offer_events · mart.market_metrics · mart.deal_pl · mart.feedback_log)
-        │
-        ▼
-Tool Layer  ──────────────────────────────────────────────────────────────
-  data_loader.py      get_market_summary() · get_market_trend() · detect_anomalies()
-  analyzer.py         score_market_risk() · rank_all_markets()
-  deal_scout.py       get_top_deals() · estimate_renovation()
-  capital_light.py    detect_inventory_surges() · get_contribution_margin_forecast() · rank_top_100_deals()
-  pricing_engine.py   analyze_pricing_accuracy() · analyze_funnel_drop() · generate_pricing_actions() · estimate_business_impact()
-  feedback_tracker.py log_recommendation() · record_outcome() · recalibrate_confidence()
-        │
-        ▼
-Claude Opus 4.6  →  native tool use, proactive loop, no wrappers
-        │
-        ▼
-Output  →  Daily briefing · Slack alert · Deal pipeline JSON · Web dashboard
+MARKET INTELLIGENCE BRIEFING  ·  Monday 6:02am
+
+PORTFOLIO SNAPSHOT
+  Markets monitored:      4
+  Active risk flags:      2  (1 HIGH · 1 MEDIUM)
+  Avg hold days:         83  (target: 90)
+  Portfolio CM:         $4.5M available across 100 ranked deals
+
+─────────────────────────────────────────────────
+
+SIGNAL 1  ·  PHOENIX  ·  HIGH
+  Pricing drift detected: offers running +4.2% above market estimated value
+  Acceptance rate declined 11.8% WoW · LSR: 0.94 (threshold: 0.95)
+  DOM up 6 days MoM · Funnel bottleneck at offer stage
+
+  Financial Impact:   ~10 homes/month at risk · $192k margin/month
+  Action:             Narrow offer band -2% to -4% in affected ZIPs by Friday
+  Owner:              Pricing Team
+  Deadline:           72 hours
+
+─────────────────────────────────────────────────
+
+SIGNAL 2  ·  ATLANTA  ·  MEDIUM
+  Inventory aging: 22% of active homes > 90 days DOM
+  Holding cost exposure compounding at ~$230/day per property
+
+  Action:             Accelerate price adjustments. Flag for weekly review.
+  Owner:              Acquisitions Lead
 ```
 
 ---
 
-## Key Capabilities
-
-### Pricing & Conversion Decision Engine
-Detects offer pricing drift using List-to-Sale Ratio (LSR) as an acceptance behavior proxy. When LSR ≤ 0.95, the system diagnoses the funnel stage-by-stage and generates a **Decision Packet** — not an insight, a packet ready to act on:
+### Decision Packet — Pricing Misalignment
 
 ```
-Issue:            Offer acceptance dropped 11.8% WoW
+DECISION PACKET
+─────────────────────────────────────────────────
+Issue:            Offer acceptance dropped 11.8% WoW in Phoenix
 Severity:         HIGH — act within 24–72 hours
-Evidence:         LSR at 0.95, pricing drifting outside observed acceptance behavior, DOM +6 days
-Action:           Narrow offer band -2% to -4% in affected ZIPs by Friday
-Financial Impact: ~10 homes/month at risk, $192k margin/month
-Expected Outcome: +6–9% acceptance rate improvement within 2–3 weeks
+
+Evidence:
+  · LSR at 0.94 (threshold: 0.95)
+  · Offers drifting +4.2% above AVM-estimated market value
+  · DOM increased 6 days MoM
+  · Lead-to-offer ratio holding — problem is at the offer stage
+
+Financial Impact:
+  · ~10 homes/month not closing
+  · $192,000 margin at risk per month
+  · Annualized exposure: ~$2.3M if unaddressed
+
+Action:
+  1. Narrow offer band -2% to -4% in affected ZIPs by Friday
+  2. Segment by property type — confirm pricing model inputs
+  3. Monitor LSR weekly; re-evaluate if no recovery in 2 weeks
+
+Expected Outcome: +6–9% acceptance rate recovery within 2–3 weeks
 Owner:            Pricing Team
+Confidence:       High (feedback-calibrated: 0.82)
+─────────────────────────────────────────────────
 ```
+
+---
 
 ### Capital-Light Deal Scoring
-Ranks 100 acquisition opportunities by **Contribution Margin per day held** — the metric that matters for Opendoor's 2026 strategy. Full P&L per deal:
 
 ```
-ARV − Acquisition − Renovation − Holding Costs − Selling Costs = CM
+You:    Find me capital-light deals under $350k with ROI above 12%
+
+        [calling: rank_top_100_deals(semantic_filter="capital-light opportunities")]
+
+Agent:  27 deals meet the capital-light criteria.
+
+        Top opportunity: Phoenix · 2,100 sqft · cosmetic condition
+          Acquisition:   $298,000
+          Renovation:    $31,000
+          ARV:           $412,000
+          CM:            $44,800  (10.9% of ARV)
+          ROI:           13.6%
+          Est. hold:     68 days
+          CM/day:        $659
+
+        This deal closes 22 days faster than the market average.
+        At current capital cost, velocity is worth ~$5,000 in margin vs. a 90-day hold.
 ```
 
-Supports semantic filters: `"capital-light opportunities"`, `"fast turn deals"`, `"high contribution margin"`.
+---
+
+## Why This Matters
+
+### From reactive analytics to proactive decisioning
+
+| Traditional setup | This system |
+|-------------------|-------------|
+| Analyst pulls report when asked | Agent scans every morning, unprompted |
+| Dashboard shows what happened | Agent interprets what it means and what to do |
+| Signal noticed on Thursday | Decision Packet delivered Monday 6am |
+| Recommendation written manually | Action assigned with owner, deadline, and SLA |
+| Outcome not tracked | Prediction logged, outcome measured, confidence recalibrated |
+
+### The business impact is concrete
+
+Every signal the system surfaces gets translated into unit economics before it reaches a human:
+
+```
+Pricing drift +4%   →   10 homes/month not closing   →   $192k margin at risk
+DOM up 6 days       →   holding cost compounding at $230/day per property
+Inventory surge     →   capital deployed below CM floor of $30k/deal
+```
+
+A VP of Acquisitions doesn't have time to interpret signals. They need: **act on this by Friday or it costs $192k.** That's the output contract.
+
+---
+
+## System Capabilities
+
+### Market Intelligence
+- Multi-market anomaly detection with statistical threshold flagging
+- 5-signal risk scoring (1–10) per market: DOM trend, sales volume, LSR, supply, price direction
+- Historical trend analysis across 6 KPIs
+- Leading indicator watch list for early-cycle warnings
+
+### Pricing & Conversion
+- List-to-Sale Ratio (LSR) as acceptance behavior proxy
+- Stage-by-stage funnel diagnosis: where exactly conversion is breaking
+- Offer band adjustment recommendations with ZIP-level specificity
+- Business impact translation: homes/month and margin dollars per issue
+
+### Deal Scoring & Capital Allocation
+- 100 deals ranked by **Contribution Margin per day held** — the Capital-Light metric
+- Full P&L per deal: `ARV − Acquisition − Renovation − Holding − Selling = CM`
+- Semantic filters: `"capital-light opportunities"` · `"fast turn deals"` · `"high CM"`
+- Renovation tier modeling: cosmetic / moderate / full gut, with ARV uplift estimates
+
+### Operational Learning
+- Every Decision Packet is logged with a predicted outcome
+- Actual KPI measured on follow-up; prediction accuracy computed
+- Confidence weights recalibrated automatically per issue type
+- Weekly learning report surfaces model drift and accuracy trends
 
 ### Severity Framework
 
-| Severity | SLA | Response |
-|----------|-----|----------|
-| CRITICAL | 24 hours | Escalate to VP Acquisitions. Block new offers. |
+| Level | SLA | Default Response |
+|-------|-----|-----------------|
+| CRITICAL | 24 hours | Escalate to VP. Block new offers. |
 | HIGH | 24–72 hours | Owner produces action plan by next business day |
 | MEDIUM | 1 week | Flag for weekly review |
 | LOW | Informational | Log and monitor |
 
-### Self-Improving Feedback Loop
-Every Decision Packet is logged with a predicted outcome. When the actual KPI is measured, prediction accuracy is computed and confidence weights are recalibrated automatically:
+---
+
+## Architecture
 
 ```
-Decision Packet  →  log_recommendation()  →  record_action_taken()
-        →  record_outcome()  →  recalibrate_confidence()  →  next briefing
+Data Sources  →  Tool Layer  →  Claude Opus 4.6  →  Decision Outputs
 ```
 
-### Pricing & Conversion Copilot (`copilot/`)
-A separate deterministic detection pipeline — runs without an API key (`--mock` mode). Finds issues in synthetic data across 4 markets × 3 segments × 12 weeks. 49 tests passing.
+**Data layer:** Market metrics, offer events, funnel activity, inventory status — currently CSV (production target: Snowflake via AWS Kinesis + Glue/dbt)
+
+**Tool layer:** Six Python modules, each with a single responsibility. Tools return structured dicts — optimized for LLM reasoning, JSON-serializable, testable independently.
+
+```
+data_loader.py       get_market_summary · get_market_trend · detect_anomalies
+analyzer.py          score_market_risk · rank_all_markets
+deal_scout.py        get_top_deals · estimate_renovation
+capital_light.py     detect_inventory_surges · CM forecast · rank_top_100_deals
+pricing_engine.py    analyze_pricing_accuracy · analyze_funnel_drop
+                     generate_pricing_actions · estimate_business_impact
+feedback_tracker.py  log_recommendation · record_outcome · recalibrate_confidence
+```
+
+**Agent layer:** Claude decides which tools to call, in what sequence, how many times — based on what each tool returns. No orchestration framework. No prompt chaining. Just native tool use and a tight output contract.
+
+**Output layer:** Decision Packets → terminal / Slack / markdown briefing / JSON pipeline
+
+---
+
+## Design Philosophy
+
+**Default to proactive.** A system that waits to be asked will always be behind the market. The monitor agent runs on a schedule, not a prompt.
+
+**Separate detection from decisioning.** Deterministic code finds the issue. Claude explains it, quantifies it, and recommends an action. Each layer does what it does best.
+
+**Quantify impact, not just anomalies.** Flagging that LSR dropped is table stakes. Saying it costs $192k/month and naming the owner is what makes analytics operationally useful.
+
+**Make actions explicit.** Every output includes who should act, by when, and what success looks like. No open-ended recommendations.
+
+**Learn from outcomes.** The system tracks its own predictions, measures actual KPI recovery, and recalibrates confidence weights. It gets better over time without manual retraining.
+
+---
+
+## See It Live
+
+**[→ Portfolio Overview](https://ronokelishek.github.io/opendoor-agent/portfolio.html)**
+Full system walkthrough — Capital-Light strategy, deal scout, market risk
+
+**[→ Decision Engine](https://ronokelishek.github.io/opendoor-agent/decision-engine.html)**
+Pricing & Conversion alerts — Decision Packets, severity framework, feedback loop
+
+**[→ Production Architecture](https://ronokelishek.github.io/opendoor-agent/production-architecture.html)**
+AWS diagram — upstream systems, Snowflake tables, real-time data flow
 
 ---
 
 ## Quick Start
 
 ```bash
-# 1. Clone and install
+# 1. Clone
 git clone https://github.com/ronokelishek/opendoor-agent.git
 cd opendoor-agent
 pip install -r requirements.txt
 
-# 2. Add your API key
+# 2. Configure
 cp .env.example .env
-# Add ANTHROPIC_API_KEY to .env
+# Add your ANTHROPIC_API_KEY to .env
 
-# 3. Interactive Q&A agent
+# 3. Run the Q&A agent
 py -m src.agent
 
-# 4. Proactive daily briefing
+# 4. Run the proactive daily briefing
 py -m src.monitor
 
-# 5. Pricing & Conversion Copilot (no API key needed)
+# 5. Run the Pricing Copilot (no API key needed)
 py -m copilot.main --mock
-```
-
----
-
-## Example Agent Interactions
-
-```
-You: What markets should I be worried about right now?
-
-  [calling: detect_anomalies]
-  [calling: rank_all_markets]
-
-Agent:
-Charlotte and Dallas are flashing the same early-cycle warning pattern.
-DOM is up 47% above average. Homes sold down 43% MoM.
-List-to-sale ratio softening toward the 0.94 pause threshold.
-
-Action: Tighten acquisition spreads in Charlotte immediately.
-        Reduce buy-box volume. Monitor LSR weekly.
-        If LSR < 0.94 next week — pause new offers.
-```
-
-```
-You: Find me capital-light deals under $350k with ROI above 12%
-
-  [calling: rank_top_100_deals(semantic_filter="capital-light opportunities")]
-
-Agent:
-27 deals meet the capital-light criteria.
-Top opportunity: Phoenix · 2,100 sqft · cosmetic condition
-  Acquisition: $298,000 · Reno: $31,000 · ARV: $412,000
-  CM: $44,800 · ROI: 13.6% · Hold: 68 days · CM/day: $659
 ```
 
 ---
 
 ## Tech Stack
 
-| Layer | Choice | Why |
-|-------|--------|-----|
-| AI Model | Claude Opus 4.6 | Best reasoning + native tool use |
-| Agent Framework | Anthropic Python SDK | No wrappers — direct API control |
-| Data Processing | pandas | Standard, production-proven |
-| Data Warehouse | Snowflake (Phase 2) | Opendoor's stack |
-| Ingestion | AWS Kinesis + S3 + Glue | Real-time + batch paths |
-| Scheduling | AWS EventBridge | Cron trigger for daily briefing |
+| Category | Choice | Why |
+|----------|--------|-----|
+| LLM | Claude Opus 4.6 | Best multi-step reasoning + native tool use |
+| Agent Framework | Anthropic Python SDK | No wrappers — direct API, full control |
+| Data | pandas | Production-proven, fast to iterate |
+| Data Warehouse | Snowflake *(Phase 2)* | Standard at scale for this domain |
+| Ingestion | AWS Kinesis + S3 + Glue | Real-time offers + batch market data |
+| Scheduling | AWS EventBridge | 6am daily briefing cron |
 | Language | Python 3.14 | |
 
 ---
@@ -191,104 +340,47 @@ Top opportunity: Phoenix · 2,100 sqft · cosmetic condition
 ```
 opendoor-agent/
 ├── src/
-│   ├── agent.py                  ← Interactive Q&A agent
-│   ├── monitor.py                ← Proactive daily briefing
+│   ├── agent.py                  ← Q&A agent — natural language to tool calls to action
+│   ├── monitor.py                ← Proactive daily briefing — no input required
 │   └── tools/
-│       ├── data_loader.py        ← Market metrics (summary, trend, anomalies)
+│       ├── data_loader.py        ← Market metrics: summary, trend, anomaly detection
 │       ├── analyzer.py           ← Risk scoring engine (1–10 per market)
-│       ├── deal_scout.py         ← Top 100 deals · ROI · P&L · reno estimates
-│       ├── capital_light.py      ← CM forecast · inventory surges · semantic filters
-│       ├── pricing_engine.py     ← Decision Engine · LSR · funnel · impact $
-│       └── feedback_tracker.py   ← Prediction logging · outcome tracking · recalibration
-├── copilot/                      ← Pricing & Conversion Copilot (standalone pipeline)
-│   ├── data/                     ← Synthetic data generator (seed=42, reproducible)
-│   ├── detection/                ← Deterministic issue detection (no LLM)
-│   ├── agents/                   ← Claude reasoning layer (mock fallback)
-│   └── reports/                  ← Executive markdown · JSON alerts · Slack summaries
+│       ├── deal_scout.py         ← Deal ranking: ROI, P&L, renovation estimates
+│       ├── capital_light.py      ← CM forecast, inventory surges, semantic deal filters
+│       ├── pricing_engine.py     ← Decision Engine: LSR, funnel, actions, impact $
+│       └── feedback_tracker.py   ← Prediction logging, outcome tracking, recalibration
+├── copilot/                      ← Standalone pricing pipeline (mock mode, no API key)
+│   ├── data/                     ← Reproducible synthetic data (seed=42)
+│   ├── detection/                ← Deterministic issue detection
+│   ├── agents/                   ← Claude reasoning layer with mock fallback
+│   └── reports/                  ← Markdown reports, JSON alerts, Slack summaries
 ├── agents/
-│   ├── analytics-agent.yml       ← Agent definition (role, tools, output format)
+│   ├── analytics-agent.yml       ← Agent role, tools, output format
 │   └── monitor-agent.yml         ← Monitor agent definition
 ├── skills/
-│   ├── market-briefing/          ← Daily market intelligence skill
+│   ├── market-briefing/          ← Daily intelligence skill
 │   ├── risk-analyzer/            ← 5-signal acquisition risk scoring
 │   └── deal-scout/               ← ROI deal ranking skill
 ├── briefings/                    ← Auto-saved daily reports (markdown)
-├── docs/
-│   ├── portfolio.html            ← Portfolio showcase
-│   ├── decision-engine.html      ← Decision Engine showcase
-│   ├── production-architecture.html ← AWS production architecture
-│   └── architecture.md           ← Full system documentation
-├── .env.example
-└── requirements.txt
+└── docs/
+    ├── portfolio.html            ← Portfolio showcase
+    ├── decision-engine.html      ← Decision Engine showcase
+    ├── production-architecture.html ← AWS production architecture
+    └── architecture.md           ← Full system documentation
 ```
 
 ---
 
-## Why This Matters for Opendoor
+## Closing
 
-Opendoor's 2026 strategy is **Capital-Light and AI-First**. The two metrics that matter:
-1. **Contribution Margin** — net profit per deal after all costs. Floor: $30,000.
-2. **Inventory Turn** — every extra day in possession erodes margin.
+This project demonstrates what it looks like to move past dashboards and build AI systems that make decisions operational.
 
-This system operationalizes both — finding the highest CM-per-day-deployed opportunities while flagging markets where rising inventory is silently compressing margins. It doesn't wait to be asked.
+The architecture is intentional: deterministic detection, LLM reasoning, structured outputs, outcome tracking. Each layer has a clear job. The agents don't just surface data — they translate it into action, assign ownership, and get smarter over time.
 
----
+**What this shows:**
+- Designing agentic systems with production constraints in mind
+- Connecting business metrics (CM/day, LSR, margin at risk) to agent behavior
+- Building tool layers that are clean, testable, and LLM-optimized
+- Thinking about the full loop: detection → recommendation → outcome → recalibration
 
-## How This Agent Directly Serves Opendoor's 2026 Strategy
-
-### Problem 1: Every day a home sits = money lost
-Opendoor owns the home. Mortgage, taxes, insurance, maintenance — ~$200–250/day per property. The 2026 Capital-Light strategy exists because they need to turn inventory faster.
-
-**What the agent does:**
-```
-rank_top_100_deals()  →  sorts by CM/day, not just ROI
-```
-Instead of "which deal has the best profit?" it answers **"which deal makes the most money per day held?"** — that's the exact metric Opendoor 2026 runs on.
-
----
-
-### Problem 2: Pricing drift kills conversion silently
-In a volatile market, sellers are skittish. If Opendoor's offers drift even 3–4% above market, acceptance rate drops — but nobody notices for 2–3 weeks. By then, 10–15 deals are already lost.
-
-**What the agent does:**
-```
-analyze_pricing_accuracy()  →  catches drift in real time
-generate_pricing_actions()  →  tells you exactly what to adjust
-estimate_business_impact()  →  "this is costing $192k/month right now"
-```
-It finds the problem **before the weekly review**, not after.
-
----
-
-### Problem 3: Analysts answer questions. The agent asks them first.
-
-| Traditional Analytics | This Agent |
-|----------------------|------------|
-| VP asks "how's Phoenix?" | Agent wakes up and says "Phoenix is broken, here's why, here's the cost, here's what to do" |
-| Dashboard shows metrics | Agent interprets the metrics in cycle context |
-| Report published Friday | Decision Packet ready Monday 6am |
-| Analyst writes recommendation | Agent assigns owner, severity, and SLA |
-
----
-
-### The Dollar Translation
-
-Every signal becomes a number:
-
-```
-LSR drops 0.03  →  ~10 homes/month not closing  →  $192k margin at risk
-DOM up 6 days   →  holding cost exposure compounds daily
-Inventory surge →  capital deployed earning below CM floor
-```
-
-A VP of Acquisitions doesn't have time to read signals. They need **"act on this by Friday or it costs $192k."** That's what the agent produces.
-
----
-
-### The One-Sentence Version
-
-> Opendoor's margin lives in the spread between acquisition price and resale speed. This agent monitors both in real time, catches drift before it compounds, and tells the acquisitions team exactly what to do — in the same format they'd expect from a senior analyst, at 6am, every day, without being asked.
-
----
-
-*Built for Opendoor's Senior Agentic Analytics Engineer role.*
+> Built as a portfolio demonstration for Opendoor's Senior Agentic Analytics Engineer role.
