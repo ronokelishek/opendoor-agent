@@ -234,4 +234,61 @@ This system operationalizes both — finding the highest CM-per-day-deployed opp
 
 ---
 
+## How This Agent Directly Serves Opendoor's 2026 Strategy
+
+### Problem 1: Every day a home sits = money lost
+Opendoor owns the home. Mortgage, taxes, insurance, maintenance — ~$200–250/day per property. The 2026 Capital-Light strategy exists because they need to turn inventory faster.
+
+**What the agent does:**
+```
+rank_top_100_deals()  →  sorts by CM/day, not just ROI
+```
+Instead of "which deal has the best profit?" it answers **"which deal makes the most money per day held?"** — that's the exact metric Opendoor 2026 runs on.
+
+---
+
+### Problem 2: Pricing drift kills conversion silently
+In a volatile market, sellers are skittish. If Opendoor's offers drift even 3–4% above market, acceptance rate drops — but nobody notices for 2–3 weeks. By then, 10–15 deals are already lost.
+
+**What the agent does:**
+```
+analyze_pricing_accuracy()  →  catches drift in real time
+generate_pricing_actions()  →  tells you exactly what to adjust
+estimate_business_impact()  →  "this is costing $192k/month right now"
+```
+It finds the problem **before the weekly review**, not after.
+
+---
+
+### Problem 3: Analysts answer questions. The agent asks them first.
+
+| Traditional Analytics | This Agent |
+|----------------------|------------|
+| VP asks "how's Phoenix?" | Agent wakes up and says "Phoenix is broken, here's why, here's the cost, here's what to do" |
+| Dashboard shows metrics | Agent interprets the metrics in cycle context |
+| Report published Friday | Decision Packet ready Monday 6am |
+| Analyst writes recommendation | Agent assigns owner, severity, and SLA |
+
+---
+
+### The Dollar Translation
+
+Every signal becomes a number:
+
+```
+LSR drops 0.03  →  ~10 homes/month not closing  →  $192k margin at risk
+DOM up 6 days   →  holding cost exposure compounds daily
+Inventory surge →  capital deployed earning below CM floor
+```
+
+A VP of Acquisitions doesn't have time to read signals. They need **"act on this by Friday or it costs $192k."** That's what the agent produces.
+
+---
+
+### The One-Sentence Version
+
+> Opendoor's margin lives in the spread between acquisition price and resale speed. This agent monitors both in real time, catches drift before it compounds, and tells the acquisitions team exactly what to do — in the same format they'd expect from a senior analyst, at 6am, every day, without being asked.
+
+---
+
 *Built for Opendoor's Senior Agentic Analytics Engineer role.*
