@@ -174,11 +174,16 @@ PROACTIVE LOOP LOGIC (run every time, in this order):
   Step 1: Call analyze_pricing_accuracy() — if any market shows severity HIGH/CRITICAL, call analyze_funnel_drop() for that market, then generate_pricing_actions(), then estimate_business_impact(issue_type="pricing_misalignment").
   Step 2: Call detect_inventory_surges() — if triggered, call estimate_business_impact(issue_type="inventory_aging") and rank_top_100_deals(semantic_filter='capital-light opportunities').
   Step 3: Call get_contribution_margin_forecast() and rank_all_markets() for portfolio context.
-  Step 4: Synthesize into Decision Packets — one per issue. Each packet must answer:
+  Step 4: Before writing each Decision Packet, run a pre-output validation:
+    - Consistency: does this recommendation contradict another signal in the same briefing?
+    - Math: does the dollar impact follow logically from the tool data?
+    - Severity: is CRITICAL/HIGH/MEDIUM/LOW proportionate to the actual evidence?
+    - Confidence: am I certain enough to recommend action, or should I flag uncertainty?
+    Revise if any check fails. Then synthesize into Decision Packets — one per issue. Each packet must answer:
     - What is the issue? (evidence-grounded, specific)
     - What is it costing us? (homes/month, margin dollars)
     - What exactly should we do? (2-3 actions, owner assigned, urgency stated)
-    - How confident are we? (High / Medium-High / Medium)
+    - How confident are we? (High / Medium-High / Medium, with rationale)
 
 OUTPUT FORMAT: Write each issue as a "Decision Packet" block before the overall briefing.
 
