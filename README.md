@@ -1,9 +1,8 @@
 # Agentic Analytics System · Real Estate Decision Intelligence
 
-> **A proactive AI agent that monitors real estate markets, detects risk before it compounds, and delivers decision-ready recommendations — without being asked.**
+> **A working example of what an AI Analytics Engineer actually builds: agents that detect problems, quantify the cost, and recommend action.**
 
-Built to demonstrate what agentic analytics looks like at production scale:
-two agents, a full tool layer, native Claude tool use, and outputs that tell an acquisitions team exactly what to do and what it costs if they don't.
+Not a dashboard. Not a chatbot. A system that wakes up, scans every market, finds what's breaking, puts a dollar number on it, and tells the right person exactly what to do — before anyone asks.
 
 **→ [See it live](https://ronokelishek.github.io/opendoor-agent/portfolio.html)**
 
@@ -185,9 +184,11 @@ Agent:  27 deals meet the capital-light criteria.
 
 ---
 
-## Why This Matters
+## What an AI Analytics Engineer Actually Builds
 
-### From reactive analytics to proactive decisioning
+This is the difference between analytics that reports and analytics that acts.
+
+### From reactive to proactive
 
 | Traditional setup | This system |
 |-------------------|-------------|
@@ -375,16 +376,17 @@ opendoor-agent/
 
 ---
 
-## Closing
+## What This Demonstrates
 
-This project demonstrates what it looks like to move past dashboards and build AI systems that make decisions operational.
+An AI Analytics Engineer doesn't just analyze data — they build the system that turns data into decisions.
 
-The architecture is intentional: deterministic detection, LLM reasoning, structured outputs, outcome tracking. Each layer has a clear job. The agents don't just surface data — they translate it into action, assign ownership, and get smarter over time.
+This project shows that full stack:
 
-**What this shows:**
-- Designing agentic systems with production constraints in mind
-- Connecting business metrics (CM/day, LSR, margin at risk) to agent behavior
-- Building tool layers that are clean, testable, and LLM-optimized
-- Thinking about the full loop: detection → recommendation → outcome → recalibration
+- **Detection** — finding the signal before it becomes a problem
+- **Quantification** — putting a dollar number on every risk, not just a flag
+- **Action** — recommending exactly what to do, who owns it, and by when
+- **Learning** — tracking whether the recommendation was right, and getting better
 
-> Built as a portfolio demonstration for Opendoor's Senior Agentic Analytics Engineer role.
+The architecture is intentional at every layer: deterministic detection, LLM reasoning, structured outputs, outcome feedback. Nothing is bolted on. Each piece earns its place.
+
+> This is what I build. If your team needs analytics that acts, not just reports — [let's talk](https://github.com/ronokelishek).
