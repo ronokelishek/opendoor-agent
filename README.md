@@ -12,15 +12,21 @@ Not a dashboard. Not a chatbot. A system that wakes up, scans every market, find
 
 ---
 
-## The Problem
+## The Problem: The "Dashboard Fatigue" Gap
 
-Most analytics teams are reactive by design.
+In most analytics teams, we've gotten really good at collecting data — but we're still struggling to actually use it in time.
 
-A market starts softening on Monday. The dashboard shows it by Wednesday. Someone notices on Thursday. A report goes out Friday. A decision gets made the following week — after 10 deals have already been mispriced, 15 seller conversations have gone sideways, and $180k in margin has quietly walked out the door.
+The typical workflow looks like this: a market shift happens on Monday, it hits the dashboard on Wednesday, someone notices on Thursday, and a meeting gets scheduled for the following Tuesday. By then, the window to act has already closed.
 
-The gap isn't data. It's the time between signal and action.
+The real issues aren't the data. It's the friction:
 
-> When pricing drifts 3% above market, acceptance rate drops — but no one sees it for two weeks. By then, the damage is done.
+**Analysis Paralysis** — We have 50 dashboards, but no one is telling us which one matters today.
+
+**The "So What?" Problem** — A chart might show that acceptance rates are down, but it doesn't tell a VP whether to change pricing, adjust the offer band, or just wait it out.
+
+**Human Latency** — We spend 80% of our time finding the problem and only 20% fixing it. In a fast-moving market, that ratio is backwards.
+
+We don't need more reports. We need a system that acts as a teammate — one that taps you on the shoulder at 6am and says: *"Here's exactly what's broken, what it's costing us, and here's the plan to fix it."*
 
 ---
 
