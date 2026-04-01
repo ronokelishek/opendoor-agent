@@ -9,6 +9,10 @@ two agents, a full tool layer, native Claude tool use, and outputs that tell an 
 
 ---
 
+![Agent Flow](docs/assets/agent-flow.svg)
+
+---
+
 ## The Problem
 
 Most analytics teams are reactive by design.
