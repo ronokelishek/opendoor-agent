@@ -275,6 +275,8 @@ pricing_engine.py    analyze_pricing_accuracy · analyze_funnel_drop
 feedback_tracker.py  log_recommendation · record_outcome · recalibrate_confidence
 ```
 
+**Semantic layer:** The tool layer acts as the governed metric contract for both humans and the AI. `CM`, `LSR`, `hold_days`, and `severity` have exactly one definition — enforced in code, not in prompts. Claude never queries raw data directly; it always goes through a tool that owns the business logic. This is what prevents metric drift when the same question gets asked ten different ways.
+
 **Agent layer:** Claude decides which tools to call, in what sequence, how many times — based on what each tool returns. No orchestration framework. No prompt chaining. Just native tool use and a tight output contract.
 
 **Output layer:** Decision Packets → terminal / Slack / markdown briefing / JSON pipeline
@@ -292,6 +294,8 @@ feedback_tracker.py  log_recommendation · record_outcome · recalibrate_confide
 **Make actions explicit.** Every output includes who should act, by when, and what success looks like. No open-ended recommendations.
 
 **Learn from outcomes.** The system tracks its own predictions, measures actual KPI recovery, and recalibrates confidence weights. It gets better over time without manual retraining.
+
+**One definition per metric.** Business logic lives in the tool layer, not the prompt. When the agent says "$192k at risk," that number comes from a governed calculation — not a guess. AI makes natural-language analytics faster; it does not make semantic discipline optional.
 
 ---
 
