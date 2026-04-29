@@ -1,0 +1,662 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Agentic Analytics System — Presentation</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#09090f;--surface:#0f1018;--card:#13151f;--border:#1e2235;
+      --text:#e2e8f0;--muted:#64748b;--dim:#252d42;
+      --blue:#38bdf8;--green:#4ade80;--purple:#c084fc;
+      --orange:#fb923c;--yellow:#fbbf24;--red:#f87171;
+    }
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      background:var(--bg);color:var(--text);height:100vh;overflow:hidden}
+
+    /* ── SLIDE CONTAINER ── */
+    .deck{width:100%;height:100vh;position:relative}
+    .slide{
+      position:absolute;inset:0;display:none;flex-direction:column;
+      justify-content:center;align-items:center;padding:60px;
+      opacity:0;transition:opacity .35s ease;
+    }
+    .slide.active{display:flex;opacity:1}
+
+    /* ── NAV ── */
+    .nav{
+      position:fixed;bottom:32px;left:50%;transform:translateX(-50%);
+      display:flex;align-items:center;gap:16px;z-index:100;
+      background:#0f1018cc;backdrop-filter:blur(12px);
+      border:1px solid var(--border);border-radius:40px;padding:10px 20px;
+    }
+    .nav button{
+      background:none;border:1px solid var(--border);color:var(--muted);
+      padding:6px 18px;border-radius:20px;cursor:pointer;font-size:13px;
+      transition:all .2s;
+    }
+    .nav button:hover{border-color:var(--blue);color:var(--blue)}
+    .nav button:disabled{opacity:.3;cursor:not-allowed}
+    .nav .counter{font-size:12px;color:var(--muted);min-width:50px;text-align:center}
+    .dots{display:flex;gap:6px}
+    .dot{width:6px;height:6px;border-radius:50%;background:var(--dim);
+      cursor:pointer;transition:all .2s}
+    .dot.active{background:var(--blue);width:18px;border-radius:4px}
+
+    /* ── KEYBOARD HINT ── */
+    .hint{position:fixed;top:20px;right:24px;font-size:11px;color:var(--muted);
+      background:#0f1018cc;border:1px solid var(--border);border-radius:8px;
+      padding:6px 12px}
+
+    /* ── SLIDE LABEL ── */
+    .slide-label{
+      position:fixed;top:20px;left:24px;font-size:11px;color:var(--muted);
+      background:#0f1018cc;border:1px solid var(--border);border-radius:8px;
+      padding:6px 12px;letter-spacing:.05em;text-transform:uppercase
+    }
+
+    /* ── TYPOGRAPHY ── */
+    h1{font-size:clamp(28px,4vw,52px);font-weight:700;line-height:1.15;
+      letter-spacing:-.02em;text-align:center}
+    h2{font-size:clamp(20px,2.5vw,34px);font-weight:700;letter-spacing:-.01em;
+      margin-bottom:8px}
+    h3{font-size:clamp(14px,1.5vw,18px);font-weight:600;margin-bottom:6px}
+    p{color:#94a3b8;font-size:clamp(13px,1.2vw,16px);line-height:1.7}
+    .sub{font-size:clamp(14px,1.4vw,20px);color:#94a3b8;text-align:center;
+      max-width:700px;line-height:1.6;margin-top:16px}
+    .eyebrow{font-size:11px;text-transform:uppercase;letter-spacing:.12em;
+      color:var(--blue);margin-bottom:12px;font-weight:600}
+
+    /* ── CARDS ── */
+    .card{background:var(--card);border:1px solid var(--border);
+      border-radius:12px;padding:24px 28px}
+    .card-blue{border-color:#0e3a5e;background:#071e33}
+    .card-green{border-color:#0f3d20;background:#071f12}
+    .card-purple{border-color:#2d1650;background:#140b22}
+    .card-orange{border-color:#3d2005;background:#1f1005}
+    .card-yellow{border-color:#3d3005;background:#1f1a05}
+
+    /* ── GRID LAYOUTS ── */
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:20px;width:100%;max-width:960px}
+    .grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px;width:100%;max-width:1000px}
+    .grid-4{display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;width:100%;max-width:1100px}
+
+    /* ── CODE BLOCK ── */
+    pre{background:#060810;border:1px solid var(--border);border-radius:10px;
+      padding:20px 24px;font-family:"SF Mono",Fira Mono,monospace;
+      font-size:clamp(11px,1vw,13px);color:#94a3b8;line-height:1.7;
+      overflow:hidden;width:100%;max-width:900px}
+    .hl-blue{color:var(--blue)}
+    .hl-green{color:var(--green)}
+    .hl-orange{color:var(--orange)}
+    .hl-purple{color:var(--purple)}
+    .hl-yellow{color:var(--yellow)}
+    .hl-muted{color:#475569}
+
+    /* ── BADGE ── */
+    .badge{display:inline-block;font-size:10px;font-weight:700;
+      letter-spacing:.08em;text-transform:uppercase;padding:3px 10px;
+      border-radius:20px;margin-bottom:8px}
+    .badge-red{background:#3d1010;color:var(--red)}
+    .badge-orange{background:#3d2005;color:var(--orange)}
+    .badge-yellow{background:#3d3005;color:var(--yellow)}
+    .badge-green{background:#0f3d20;color:var(--green)}
+
+    /* ── STEP ROW ── */
+    .steps{display:flex;gap:0;width:100%;max-width:960px;align-items:stretch}
+    .step{flex:1;display:flex;flex-direction:column;align-items:center;
+      text-align:center;position:relative}
+    .step:not(:last-child)::after{
+      content:'→';position:absolute;right:-14px;top:28px;
+      color:var(--muted);font-size:18px;z-index:1}
+    .step-num{width:52px;height:52px;border-radius:50%;
+      display:flex;align-items:center;justify-content:center;
+      font-size:18px;font-weight:700;margin-bottom:12px;border:2px solid}
+    .step h3{font-size:13px;margin-bottom:4px}
+    .step p{font-size:11px;color:var(--muted);line-height:1.5}
+
+    /* ── TABLE ── */
+    table{width:100%;border-collapse:collapse;max-width:860px}
+    th{font-size:11px;text-transform:uppercase;letter-spacing:.08em;
+      color:var(--muted);font-weight:600;padding:10px 16px;
+      border-bottom:1px solid var(--border);text-align:left}
+    td{padding:12px 16px;font-size:13px;border-bottom:1px solid #0f1018;color:#94a3b8}
+    td:first-child{color:var(--text);font-weight:500}
+    tr:hover td{background:#0f1018}
+
+    /* ── TITLE SLIDE SPECIFIC ── */
+    .title-accent{
+      background:linear-gradient(135deg,var(--blue),var(--purple));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent;
+      background-clip:text}
+    .kpi-row{display:flex;gap:32px;margin-top:40px}
+    .kpi{text-align:center}
+    .kpi-num{font-size:32px;font-weight:700;color:var(--blue)}
+    .kpi-label{font-size:11px;color:var(--muted);text-transform:uppercase;
+      letter-spacing:.08em;margin-top:4px}
+
+    /* ── DIVIDER ── */
+    .divider{width:48px;height:3px;border-radius:2px;margin:16px auto}
+
+    /* ── BULLET LIST ── */
+    ul.clean{list-style:none;display:flex;flex-direction:column;gap:10px}
+    ul.clean li{display:flex;align-items:flex-start;gap:10px;font-size:14px;
+      color:#94a3b8;line-height:1.6}
+    ul.clean li::before{content:'→';color:var(--blue);flex-shrink:0;
+      font-weight:700;margin-top:1px}
+
+    /* ── FLOW ARROW ── */
+    .flow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;
+      justify-content:center}
+    .flow-item{background:var(--card);border:1px solid var(--border);
+      border-radius:8px;padding:10px 18px;font-size:13px;font-weight:600}
+    .flow-arrow{color:var(--muted);font-size:20px}
+
+    /* ── QUOTE ── */
+    blockquote{
+      border-left:3px solid var(--blue);padding-left:24px;
+      font-size:clamp(15px,1.6vw,20px);color:#cbd5e1;line-height:1.7;
+      font-style:italic;max-width:760px;text-align:left}
+
+    /* ── WIDE CONTENT ── */
+    .content{width:100%;max-width:1000px;display:flex;flex-direction:column;
+      align-items:flex-start;gap:20px}
+    .content-center{width:100%;max-width:1000px;display:flex;
+      flex-direction:column;align-items:center;gap:20px}
+  </style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 1 — TITLE -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide active" data-label="Intro">
+    <div class="eyebrow">AI Analytics Engineer · Portfolio Demo</div>
+    <h1>Agentic Analytics System<br><span class="title-accent">Real Estate Decision Intelligence</span></h1>
+    <p class="sub">A working example of what an AI Analytics Engineer actually builds:<br>agents that detect problems, quantify the cost, and recommend action.</p>
+    <div class="kpi-row">
+      <div class="kpi"><div class="kpi-num">2</div><div class="kpi-label">Agents</div></div>
+      <div class="kpi"><div class="kpi-num">6</div><div class="kpi-label">Tool Modules</div></div>
+      <div class="kpi"><div class="kpi-num">4</div><div class="kpi-label">Markets</div></div>
+      <div class="kpi"><div class="kpi-num">6am</div><div class="kpi-label">Daily Scan</div></div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 2 — THE PROBLEM -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="The Problem">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">The Problem</div>
+        <h2>The Dashboard Fatigue Gap</h2>
+        <div class="divider" style="background:var(--red)"></div>
+      </div>
+      <div class="grid-3">
+        <div class="card card-orange">
+          <div class="badge badge-orange">Analysis Paralysis</div>
+          <h3>50 Dashboards</h3>
+          <p>Nobody is telling you which one matters today. Data is everywhere. Clarity is nowhere.</p>
+        </div>
+        <div class="card card-red" style="border-color:#3d1010;background:#1f0808">
+          <div class="badge badge-red">The "So What?" Problem</div>
+          <h3>Signals Without Action</h3>
+          <p>A chart shows acceptance rates dropped. But should you change pricing, adjust the offer band, or wait?</p>
+        </div>
+        <div class="card card-yellow">
+          <div class="badge badge-yellow">Human Latency</div>
+          <h3>80% Finding, 20% Fixing</h3>
+          <p>In a fast-moving market, that ratio is backwards. The window to act closes before anyone acts.</p>
+        </div>
+      </div>
+      <blockquote>
+        "A market shift happens Monday. Dashboard shows it Wednesday. Someone notices Thursday. Meeting scheduled Tuesday. By then — the window to act has already closed."
+      </blockquote>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 3 — THE SOLUTION -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="The Solution">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">The Solution</div>
+        <h2>A System That Acts, Not Just Reports</h2>
+        <div class="divider" style="background:var(--green)"></div>
+      </div>
+      <div class="grid-2" style="max-width:860px">
+        <div class="card">
+          <div style="color:var(--red);font-size:13px;font-weight:600;margin-bottom:12px">✗ Traditional Analytics</div>
+          <ul class="clean" style="gap:8px">
+            <li style="color:#64748b">Analyst pulls report when asked</li>
+            <li style="color:#64748b">Dashboard shows what happened</li>
+            <li style="color:#64748b">Signal noticed Thursday</li>
+            <li style="color:#64748b">Recommendation written manually</li>
+            <li style="color:#64748b">Outcome never tracked</li>
+          </ul>
+        </div>
+        <div class="card card-green">
+          <div style="color:var(--green);font-size:13px;font-weight:600;margin-bottom:12px">✓ This System</div>
+          <ul class="clean">
+            <li>Agent scans every morning, unprompted</li>
+            <li>Agent interprets what it means and what to do</li>
+            <li>Decision Packet delivered Monday 6am</li>
+            <li>Action assigned with owner, deadline, SLA</li>
+            <li>Prediction logged, outcome measured, recalibrated</li>
+          </ul>
+        </div>
+      </div>
+      <p style="text-align:center;max-width:600px">Every signal becomes: <strong style="color:var(--text)">homes/month at risk → margin dollars → exact action → named owner → deadline.</strong></p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 4 — MEET THE AGENTS -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="The Agents">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">Architecture</div>
+        <h2>Two Agents, Two Triggers</h2>
+        <div class="divider" style="background:var(--blue)"></div>
+      </div>
+      <div class="grid-2" style="max-width:920px">
+        <div class="card card-blue">
+          <div style="font-family:monospace;font-size:13px;color:var(--blue);margin-bottom:12px">monitor-agent</div>
+          <h3>Proactive Daily Intelligence</h3>
+          <p style="margin:10px 0 16px">Runs at 6am every day. No input needed. Scans all markets, detects issues, delivers Decision Packets before anyone asks.</p>
+          <pre style="padding:12px 16px;font-size:11px">Trigger  → EventBridge 6am cron
+Input    → None required
+Output   → Decision Packets · Alerts</pre>
+        </div>
+        <div class="card card-purple">
+          <div style="font-family:monospace;font-size:13px;color:var(--purple);margin-bottom:12px">analytics-agent</div>
+          <h3>On-Demand Q&amp;A</h3>
+          <p style="margin:10px 0 16px">Ask anything in plain English. The agent decides which tools to call, in what order, how many times — and returns a structured answer a VP can act on.</p>
+          <pre style="padding:12px 16px;font-size:11px">Trigger  → Natural language question
+Input    → Any market / deal / risk
+Output   → Insight · Evidence · Action</pre>
+        </div>
+      </div>
+      <p style="text-align:center;color:var(--muted);font-size:13px">Both agents run on Claude Opus 4.6 · Native tool use · No wrappers · Anthropic SDK only</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 5 — HOW THE AGENT THINKS -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="How It Thinks">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">Agent Reasoning</div>
+        <h2>Four Steps, Every Response</h2>
+        <div class="divider" style="background:var(--yellow)"></div>
+      </div>
+      <div class="steps" style="max-width:1000px;padding:0 10px">
+        <div class="step">
+          <div class="step-num" style="border-color:var(--yellow);color:var(--yellow);background:#1f1a05">1</div>
+          <h3 style="color:var(--yellow)">FRAME</h3>
+          <p>State competing hypotheses before touching any data. Pricing issue? Demand issue? Supply surge?</p>
+        </div>
+        <div class="step">
+          <div class="step-num" style="border-color:var(--orange);color:var(--orange);background:#1f1005">2</div>
+          <h3 style="color:var(--orange)">ANALYZE</h3>
+          <p>Call tools in sequence. Loop until there is enough evidence. Rule hypotheses in or out.</p>
+        </div>
+        <div class="step">
+          <div class="step-num" style="border-color:var(--blue);color:var(--blue);background:#071e33">3</div>
+          <h3 style="color:var(--blue)">VALIDATE</h3>
+          <p>Check consistency, math, severity, and confidence before writing a single word of output.</p>
+        </div>
+        <div class="step">
+          <div class="step-num" style="border-color:var(--green);color:var(--green);background:#071f12">4</div>
+          <h3 style="color:var(--green)">OUTPUT</h3>
+          <p>Decision Packet with owner, deadline, dollar impact, and confidence score attached.</p>
+        </div>
+      </div>
+      <pre><span class="hl-muted"># Example framing before any tool call</span>
+<span class="hl-yellow">Frame:</span>
+  H1: <span class="hl-orange">Pricing drift</span>    — offers above AVM, suppressing acceptance   → test: LSR + offer/market spread
+  H2: <span class="hl-blue">Demand softening</span> — buyer pool shrinking, independent of price   → test: lead volume + DOM
+  H3: <span class="hl-purple">Supply surge</span>     — inventory building faster than absorption   → test: months of supply
+
+  <span class="hl-green">Testing H1 first</span> — most likely given current rate volatility.</pre>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 6 — THE TOOL LAYER -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="Tool Layer">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">Architecture</div>
+        <h2>The Tool Layer — Six Modules, One Job Each</h2>
+        <div class="divider" style="background:var(--purple)"></div>
+      </div>
+      <div class="grid-3" style="max-width:1000px">
+        <div class="card">
+          <div style="font-family:monospace;font-size:11px;color:var(--blue);margin-bottom:8px">data_loader.py</div>
+          <h3>Market Intelligence</h3>
+          <p style="font-size:12px;margin-top:6px">get_market_summary · get_market_trend · detect_anomalies</p>
+        </div>
+        <div class="card">
+          <div style="font-family:monospace;font-size:11px;color:var(--blue);margin-bottom:8px">analyzer.py</div>
+          <h3>Risk Scoring</h3>
+          <p style="font-size:12px;margin-top:6px">score_market_risk · rank_all_markets<br>1–10 per market, 5 signals</p>
+        </div>
+        <div class="card">
+          <div style="font-family:monospace;font-size:11px;color:var(--blue);margin-bottom:8px">deal_scout.py</div>
+          <h3>Deal Ranking</h3>
+          <p style="font-size:12px;margin-top:6px">get_top_deals · estimate_renovation<br>ROI + P&L per deal</p>
+        </div>
+        <div class="card card-orange">
+          <div style="font-family:monospace;font-size:11px;color:var(--orange);margin-bottom:8px">capital_light.py</div>
+          <h3>CM/Day Scoring</h3>
+          <p style="font-size:12px;margin-top:6px">detect_inventory_surges · rank_top_100_deals<br>Semantic filters</p>
+        </div>
+        <div class="card card-purple">
+          <div style="font-family:monospace;font-size:11px;color:var(--purple);margin-bottom:8px">pricing_engine.py</div>
+          <h3>Decision Engine</h3>
+          <p style="font-size:12px;margin-top:6px">analyze_pricing_accuracy · analyze_funnel_drop<br>generate_pricing_actions · estimate_business_impact</p>
+        </div>
+        <div class="card card-green">
+          <div style="font-family:monospace;font-size:11px;color:var(--green);margin-bottom:8px">feedback_tracker.py</div>
+          <h3>Learning Loop</h3>
+          <p style="font-size:12px;margin-top:6px">log_recommendation · record_outcome<br>recalibrate_confidence</p>
+        </div>
+      </div>
+      <p style="color:var(--muted);font-size:13px;text-align:center">Every tool returns a structured dict · JSON-serializable · LLM-optimized · testable independently</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 7 — DECISION PACKET -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="Decision Packet">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">Output Contract</div>
+        <h2>What a Decision Packet Looks Like</h2>
+        <div class="divider" style="background:var(--green)"></div>
+      </div>
+      <div class="grid-2" style="max-width:1000px;align-items:start">
+        <pre style="font-size:12px"><span class="hl-muted">DECISION PACKET ─────────────────────────</span>
+<span class="hl-orange">Issue:</span>     Offer acceptance dropped 11.8% WoW
+<span class="hl-red">Severity:</span>  HIGH — act within 72 hours
+
+<span class="hl-blue">Evidence:</span>
+  · LSR at 0.94 (threshold: 0.95)
+  · Offers drifting +4.2% above AVM
+  · DOM increased 6 days MoM
+  · Lead volume holding — problem at offer stage
+
+<span class="hl-yellow">Impact:</span>
+  · ~10 homes/month not closing
+  · $192,000 margin at risk / month
+  · Annualized exposure: ~$2.3M
+
+<span class="hl-green">Action:</span>
+  1. Narrow offer band -2% to -4% by Friday
+  2. Segment by property type
+  3. Monitor LSR weekly for recovery
+
+Expected outcome: +6–9% acceptance in 2–3 weeks
+Owner:   Pricing Team
+<span class="hl-purple">Confidence: High (feedback-calibrated: 0.82)</span></pre>
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card card-blue">
+            <h3 style="color:var(--blue)">Not an insight</h3>
+            <p style="font-size:13px;margin-top:6px">Most tools surface signals. This delivers an action plan with a named owner, a deadline, and the dollar cost of inaction.</p>
+          </div>
+          <div class="card card-green">
+            <h3 style="color:var(--green)">Dollar-grounded</h3>
+            <p style="font-size:13px;margin-top:6px">Every signal gets translated into homes/month and margin dollars before it reaches a human. No abstract percentages.</p>
+          </div>
+          <div class="card card-purple">
+            <h3 style="color:var(--purple)">Confidence-scored</h3>
+            <p style="font-size:13px;margin-top:6px">Outputs are validated before delivery. Confidence is feedback-calibrated — it improves as outcomes are tracked.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 8 — SEMANTIC LAYER -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="Semantic Layer">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">Design Principle</div>
+        <h2>The Semantic Layer — One Definition Per Metric</h2>
+        <div class="divider" style="background:var(--orange)"></div>
+      </div>
+      <div class="grid-2" style="max-width:900px;align-items:start">
+        <div style="display:flex;flex-direction:column;gap:14px">
+          <div class="card">
+            <h3>What it is</h3>
+            <p style="font-size:13px;margin-top:8px">The tool layer acts as a governed metric contract for both humans and the AI. Claude never touches raw data — it always goes through a tool that owns the business logic.</p>
+          </div>
+          <div class="card card-orange">
+            <h3 style="color:var(--orange)">Why it matters</h3>
+            <p style="font-size:13px;margin-top:8px">AI makes natural-language analytics faster. It does not make semantic discipline optional. Without it, you don't get hallucination — you get metric drift. One prompt pulls one source. Another pulls another. The meeting turns into a debate about definitions.</p>
+          </div>
+        </div>
+        <pre style="font-size:12px"><span class="hl-muted"># One definition, used everywhere</span>
+<span class="hl-blue">CM_FLOOR</span>           = <span class="hl-green">30_000</span>    <span class="hl-muted"># $30k min per deal</span>
+<span class="hl-blue">TARGET_HOLD_DAYS</span>   = <span class="hl-green">90</span>        <span class="hl-muted"># Capital-Light target</span>
+<span class="hl-blue">LSR_THRESHOLD</span>      = <span class="hl-green">0.95</span>      <span class="hl-muted"># acceptance trigger</span>
+<span class="hl-blue">HOLDING_COST_PCT</span>   = <span class="hl-green">0.00025</span>   <span class="hl-muted"># ~$230/day per property</span>
+
+<span class="hl-muted"># Claude never does this:</span>
+<span class="hl-red">SELECT * FROM raw.offer_events</span>  <span class="hl-muted">← never</span>
+
+<span class="hl-muted"># Claude always does this:</span>
+<span class="hl-green">analyze_pricing_accuracy(market="Phoenix")</span>
+<span class="hl-muted">→ governed calculation → trusted number</span>
+
+<span class="hl-muted"># Result: "$192k at risk" is a fact,</span>
+<span class="hl-muted">#         not a guess.</span></pre>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 9 — FULL ARCHITECTURE -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="Architecture">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">System Design</div>
+        <h2>Full Stack Architecture</h2>
+        <div class="divider" style="background:var(--blue)"></div>
+      </div>
+      <div class="flow" style="max-width:1000px">
+        <div class="flow-item" style="border-color:#3d2005;color:var(--orange)">📡 Data Sources<br><span style="font-size:10px;color:var(--muted)">MLS · Offers · AVM · CRM</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item" style="border-color:#0e3a5e;color:var(--blue)">🔧 Tool Layer<br><span style="font-size:10px;color:var(--muted)">6 Python modules</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item" style="border-color:#2d1650;color:var(--purple)">🧠 Claude Opus 4.6<br><span style="font-size:10px;color:var(--muted)">Native tool use</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item" style="border-color:#0f3d20;color:var(--green)">📋 Decision Packets<br><span style="font-size:10px;color:var(--muted)">Slack · Markdown · JSON</span></div>
+        <div class="flow-arrow">→</div>
+        <div class="flow-item" style="border-color:#3d3005;color:var(--yellow)">🔄 Feedback Loop<br><span style="font-size:10px;color:var(--muted)">Log · Measure · Recalibrate</span></div>
+      </div>
+      <table style="margin-top:8px">
+        <tr><th>Layer</th><th>What it does</th><th>Production target</th></tr>
+        <tr><td>Data</td><td>Market metrics, offer events, inventory status</td><td>Snowflake via Kinesis + Glue/dbt</td></tr>
+        <tr><td>Semantic</td><td>Governed metric definitions — one source of truth</td><td>dbt metrics layer</td></tr>
+        <tr><td>Tool</td><td>Deterministic calculations, structured JSON output</td><td>AWS Lambda per tool</td></tr>
+        <tr><td>Agent</td><td>Claude reasons, frames, validates, decides</td><td>MCP Server + Claude API</td></tr>
+        <tr><td>Output</td><td>Decision Packets, briefings, pipeline triggers</td><td>Slack · S3 · EventBridge</td></tr>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 10 — FEEDBACK LOOP -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="Feedback Loop">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">Self-Improving System</div>
+        <h2>The Feedback Loop</h2>
+        <div class="divider" style="background:var(--green)"></div>
+      </div>
+      <pre style="max-width:800px"><span class="hl-orange">Decision Packet generated</span>
+        ↓
+<span class="hl-blue">log_recommendation()</span>    <span class="hl-muted">← prediction stored with confidence score</span>
+        ↓
+<span class="hl-muted">  operator takes action  (or doesn't)</span>
+        ↓
+<span class="hl-blue">record_outcome()</span>         <span class="hl-muted">← actual KPI measured 2–3 weeks later</span>
+        ↓
+<span class="hl-blue">recalibrate_confidence()</span> <span class="hl-muted">← predicted vs actual compared</span>
+        ↓
+<span class="hl-green">next briefing is smarter</span> <span class="hl-muted">← weights adjusted per issue type</span></pre>
+      <div class="grid-3" style="max-width:860px">
+        <div class="card card-blue">
+          <h3 style="color:var(--blue)">Tracks predictions</h3>
+          <p style="font-size:13px;margin-top:8px">Every Decision Packet is logged with the expected outcome and confidence score before it goes out.</p>
+        </div>
+        <div class="card card-green">
+          <h3 style="color:var(--green)">Measures reality</h3>
+          <p style="font-size:13px;margin-top:8px">When the actual KPI is measured, prediction accuracy is computed automatically.</p>
+        </div>
+        <div class="card card-purple">
+          <h3 style="color:var(--purple)">Gets smarter</h3>
+          <p style="font-size:13px;margin-top:8px">Confidence weights recalibrate per issue type. No manual retraining — it learns from outcomes.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 11 — LIVE DEMO -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="Live Demo">
+    <div class="content-center">
+      <div style="text-align:center">
+        <div class="eyebrow">See It Running</div>
+        <h2>Live Demo Pages</h2>
+        <div class="divider" style="background:var(--blue)"></div>
+      </div>
+      <div class="grid-3" style="max-width:900px">
+        <a href="portfolio.html" style="text-decoration:none">
+          <div class="card" style="cursor:pointer;transition:border-color .2s;border-color:transparent" onmouseover="this.style.borderColor='#38bdf8'" onmouseout="this.style.borderColor='transparent'">
+            <div style="font-size:28px;margin-bottom:12px">🏠</div>
+            <h3 style="color:var(--blue)">Portfolio Overview</h3>
+            <p style="font-size:13px;margin-top:8px">Full system walkthrough — Capital-Light strategy, deal scout, market risk scoring.</p>
+            <div style="color:var(--blue);font-size:12px;margin-top:12px">portfolio.html →</div>
+          </div>
+        </a>
+        <a href="decision-engine.html" style="text-decoration:none">
+          <div class="card" style="cursor:pointer;transition:border-color .2s;border-color:transparent" onmouseover="this.style.borderColor='#c084fc'" onmouseout="this.style.borderColor='transparent'">
+            <div style="font-size:28px;margin-bottom:12px">⚡</div>
+            <h3 style="color:var(--purple)">Decision Engine</h3>
+            <p style="font-size:13px;margin-top:8px">Pricing & Conversion alerts — Decision Packets, severity framework, feedback loop.</p>
+            <div style="color:var(--purple);font-size:12px;margin-top:12px">decision-engine.html →</div>
+          </div>
+        </a>
+        <a href="production-architecture.html" style="text-decoration:none">
+          <div class="card" style="cursor:pointer;transition:border-color .2s;border-color:transparent" onmouseover="this.style.borderColor='#4ade80'" onmouseout="this.style.borderColor='transparent'">
+            <div style="font-size:28px;margin-bottom:12px">🏗️</div>
+            <h3 style="color:var(--green)">Production Architecture</h3>
+            <p style="font-size:13px;margin-top:8px">AWS diagram — upstream systems, Snowflake tables, real-time data flow.</p>
+            <div style="color:var(--green);font-size:12px;margin-top:12px">production-architecture.html →</div>
+          </div>
+        </a>
+      </div>
+      <p style="color:var(--muted);font-size:13px">github.com/ronokelishek/opendoor-agent</p>
+    </div>
+  </div>
+
+  <!-- ══════════════════════════════════════════════════════ -->
+  <!-- SLIDE 12 — CLOSING -->
+  <!-- ══════════════════════════════════════════════════════ -->
+  <div class="slide" data-label="Closing">
+    <div style="text-align:center;max-width:800px">
+      <div class="eyebrow">What This Demonstrates</div>
+      <h2>An AI Analytics Engineer builds the system<br>that turns data into decisions.</h2>
+      <div class="divider" style="background:linear-gradient(90deg,var(--blue),var(--purple));margin:24px auto"></div>
+      <div class="grid-2" style="max-width:700px;margin:0 auto 32px">
+        <div style="text-align:left;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--blue);font-size:18px;flex-shrink:0">→</span>
+            <div><strong>Detection</strong><br><span style="font-size:13px;color:var(--muted)">Finding the signal before it becomes a problem</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--orange);font-size:18px;flex-shrink:0">→</span>
+            <div><strong>Quantification</strong><br><span style="font-size:13px;color:var(--muted)">Dollar number on every risk, not just a flag</span></div>
+          </div>
+        </div>
+        <div style="text-align:left;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--green);font-size:18px;flex-shrink:0">→</span>
+            <div><strong>Action</strong><br><span style="font-size:13px;color:var(--muted)">Who does it, by when, what success looks like</span></div>
+          </div>
+          <div style="display:flex;gap:12px;align-items:flex-start">
+            <span style="color:var(--purple);font-size:18px;flex-shrink:0">→</span>
+            <div><strong>Learning</strong><br><span style="font-size:13px;color:var(--muted)">Tracks predictions, measures outcomes, gets better</span></div>
+          </div>
+        </div>
+      </div>
+      <blockquote style="text-align:center;border-left:none;padding-left:0;font-size:17px">
+        "We don't need more reports. We need a system that taps us on the shoulder at 6am and says: here's exactly what's broken, what it's costing, and here's the plan."
+      </blockquote>
+    </div>
+  </div>
+
+</div><!-- /deck -->
+
+<!-- ── FIXED UI ── -->
+<div class="slide-label" id="slideLabel">Intro</div>
+<div class="hint">← → or click dots</div>
+<div class="nav">
+  <button id="prevBtn" onclick="navigate(-1)" disabled>← Prev</button>
+  <div class="dots" id="dots"></div>
+  <span class="counter" id="counter">1 / 12</span>
+  <button id="nextBtn" onclick="navigate(1)">Next →</button>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const dots = document.getElementById('dots');
+  const counter = document.getElementById('counter');
+  const label = document.getElementById('slideLabel');
+  let current = 0;
+
+  // Build dots
+  slides.forEach((s, i) => {
+    const d = document.createElement('div');
+    d.className = 'dot' + (i === 0 ? ' active' : '');
+    d.onclick = () => goTo(i);
+    dots.appendChild(d);
+  });
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    dots.children[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    dots.children[current].classList.add('active');
+    counter.textContent = `${current + 1} / ${slides.length}`;
+    label.textContent = slides[current].dataset.label || '';
+    document.getElementById('prevBtn').disabled = current === 0;
+    document.getElementById('nextBtn').disabled = current === slides.length - 1;
+  }
+
+  function navigate(dir) { goTo(current + dir); }
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') navigate(1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   navigate(-1);
+  });
+</script>
+</body>
+</html>
